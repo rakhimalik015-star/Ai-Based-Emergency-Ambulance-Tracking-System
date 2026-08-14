@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String  @id @default(auto()) @map("_id") @db.ObjectId
+  email String  @unique
+  name  String?
+  posts Post[]
+}
+
+model Post {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  content   String?
+  published Boolean @default(false)
+  author    User    @relation(fields: [authorId], references: [id])
+  authorId  String  @db.ObjectId
+}
+
+model Patient {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  age        Int
+  gender     String
+  mobile     String
+  email      String  @unique
+  bloodGroup String
+  address    String
+  emergency  String
+  condition  String?
+  password   String
+  role       String  @default("PATIENT") // PATIENT or ADMIN
+
+  createdAt DateTime @default(now())
+
+  bookings Booking[]
+}
+
+model Booking {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  patientId String  @db.ObjectId
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  pickupLocation String
+  destination    String
+  emergencyType  String
+  ambulanceType  String
+  mobile         String
+
+  status String @default("Pending")
+
+  createdAt DateTime @default(now())
+
+  ambulanceId String?    @db.ObjectId
+  ambulance   Ambulance? @relation(fields: [ambulanceId], references: [id])
+}
+
+model Ambulance {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  vehicleNo    String @unique
+  driverName   String
+  driverMobile String
+  type         String
+
+  status String @default("Available")
+
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+  driver       Driver?
+  latitude  Float?
+longitude Float?
+}
+model Driver {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String    @unique
+  mobile      String
+  password    String
+  role        String    @default("DRIVER")
+
+  ambulanceId String?   @unique @db.ObjectId
+  ambulance   Ambulance? @relation(fields: [ambulanceId], references: [id])
+
+  createdAt   DateTime  @default(now())
+}
+
+
+
+model LoginHistory {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  email   String
+  loginAt DateTime @default(now())
+}
