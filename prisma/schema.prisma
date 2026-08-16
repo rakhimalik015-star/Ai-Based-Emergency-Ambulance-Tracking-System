@@ -78,6 +78,23 @@ model Ambulance {
   latitude  Float?
 longitude Float?
 }
+
+
+model Hospital {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  address          String
+  city             String
+  latitude         Float
+  longitude        Float
+  bedsAvailable    Int      @default(0)
+  icuAvailable     Int      @default(0)
+  emergencySupport Boolean  @default(true)
+  trafficLevel     String   @default("Low")
+  status           String   @default("Available")
+  createdAt DateTime? @default(now())
+
+}
 model Driver {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String

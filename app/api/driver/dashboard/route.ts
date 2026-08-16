@@ -59,13 +59,22 @@ export async function GET(req: NextRequest) {
       booking = await prisma.booking.findFirst({
         where: {
           ambulanceId: driver.ambulanceId,
+
+          // 👇 Ye important fix hai
           status: {
-            in: ["Approved", "Pending"],
+            in: [
+              "Approved",
+              "Pending",
+              "On the Way",
+              "Arrived",
+            ],
           },
         },
+
         orderBy: {
           createdAt: "desc",
         },
+
         include: {
           patient: {
             select: {
@@ -83,11 +92,14 @@ export async function GET(req: NextRequest) {
       data: {
         driverName: driver.name,
 
-        vehicleNo: driver.ambulance?.vehicleNo || "Not Assigned",
+        vehicleNo:
+          driver.ambulance?.vehicleNo || "Not Assigned",
 
-        ambulanceType: driver.ambulance?.type || "Not Assigned",
+        ambulanceType:
+          driver.ambulance?.type || "Not Assigned",
 
-        ambulanceStatus: driver.ambulance?.status || "Not Assigned",
+        ambulanceStatus:
+          driver.ambulance?.status || "Not Assigned",
 
         booking: booking
           ? {

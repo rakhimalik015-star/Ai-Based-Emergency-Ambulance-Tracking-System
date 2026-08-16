@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import { useRouter } from "next/navigation";
 interface Ambulance {
   id: string;
   vehicleNo: string;
@@ -26,6 +26,7 @@ interface Booking {
 export default function MyBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const getBookings = async () => {
@@ -119,10 +120,10 @@ export default function MyBookings() {
                       booking.status === "Approved"
                         ? "text-green-600 font-bold"
                         : booking.status === "Cancelled"
-                        ? "text-red-600 font-bold"
-                        : booking.status === "Completed"
-                        ? "text-blue-600 font-bold"
-                        : "text-yellow-600 font-bold"
+                          ? "text-red-600 font-bold"
+                          : booking.status === "Completed"
+                            ? "text-blue-600 font-bold"
+                            : "text-yellow-600 font-bold"
                     }
                   >
                     {booking.status}
@@ -130,6 +131,16 @@ export default function MyBookings() {
                 </p>
 
               </div>
+              {booking.status === "On the Way" && (
+                <button
+                  onClick={() =>
+                    router.push(`/tracking/${booking.id}`)
+                  }
+                  className="mt-4 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700"
+                >
+                  🚑 Track Ambulance Live
+                </button>
+              )}
 
               {/* Ambulance Information */}
               {booking.ambulance ? (
