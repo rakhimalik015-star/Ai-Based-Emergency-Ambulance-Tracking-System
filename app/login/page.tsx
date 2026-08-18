@@ -1,273 +1,146 @@
-// "use client";
-
-
-// import { useRouter } from "next/navigation";
-// import { useState } from "react";
-// import Swal from "sweetalert2";
-
-
-
-
-// export default function LoginPage() {
-
-//   const [formData, setFormData] = useState({
-//     email: "",
-//     password: "",
-//   });
-
-
-//   const router = useRouter();
-
-//   const handleLogin = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     const res = await fetch("/api/login", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(formData),
-//     });
-
-
-//     const data = await res.json();
-
-
-//     if (data.success) {
-
-//       Swal.mixin({
-//         toast: true,
-//         position: "top-end",
-//         showConfirmButton: false,
-//         timer: 3000,
-//       }).fire({
-//         icon: "success",
-//         title: "Login Successful",
-//       });
-
-//       setTimeout(() => {
-//         router.push("/dashboard");
-//       }, 1000);
-//       // yaha dashboard redirect karenge
-//       // window.location.href="/dashboard";
-
-
-//     } else {
-
-//       Swal.fire({
-//         icon: "error",
-//         title: "Login Failed",
-//         text: data.message,
-//       });
-
-//     }
-
-//   };
-
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-5">
-
-//       <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
-
-//         <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
-//           Patient Login
-//         </h1>
-
-
-//         <form onSubmit={handleLogin} className="space-y-5">
-
-
-//           <div>
-//             <label className="block font-medium mb-2">
-//               Email
-//             </label>
-
-//             <input
-//               type="email"
-//               placeholder="Enter email"
-//               value={formData.email}
-//               onChange={(e) =>
-//                 setFormData({
-//                   ...formData,
-//                   email: e.target.value
-//                 })
-//               }
-//               className="w-full border p-3 rounded-lg"
-//             />
-
-//           </div>
-
-
-//           <div>
-//             <label className="block font-medium mb-2">
-//               Password
-//             </label>
-
-//             <input
-//               type="password"
-//               placeholder="Enter password"
-//               value={formData.password}
-//               onChange={(e) =>
-//                 setFormData({
-//                   ...formData,
-//                   password: e.target.value
-//                 })
-//               }
-//               className="w-full border p-3 rounded-lg"
-//             />
-
-//           </div>
-
-
-
-//           <button
-//             type="submit"
-//             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
-//           >
-//             Login
-//           </button>
-
-
-//         </form>
-
-//       </div>
-
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Swal from "sweetalert2";
+import GoogleButton from "@/app/Components/GoogleButton";
+
+const inputClass =
+  "w-full rounded-md border border-[#232B3D] bg-[#0D131F] px-4 py-3 text-[#F5F7FA] placeholder-[#4A5468] outline-none transition focus:border-[#22D3A6] focus:ring-1 focus:ring-[#22D3A6]";
+
+const labelClass = "mb-1.5 block text-sm text-[#8B95A7]";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ email: "", password: "" });
 
-  const handleLogin = async (e: React.FormEvent) => {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     setLoading(true);
-    setMessage("");
 
     try {
       const res = await fetch("/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
 
-      if (data.success) {
-        setMessage("Login Successful!");
-
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 500);
-      } else {
-        setMessage(data.message || "Login Failed");
+      if (!res.ok || !data.success) {
+        Swal.fire({
+          icon: "error",
+          title: "Login failed",
+          text: data.message || "Invalid email or password",
+        });
+        setLoading(false);
+        return;
       }
+
+      await Swal.fire({
+        icon: "success",
+        title: "Welcome back",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+
+      router.push("/dashboard");
+      router.refresh();
     } catch (error) {
-      console.log(error);
-      setMessage("Something went wrong");
-    } finally {
+      console.error("LOGIN ERROR:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Login failed. Try again.",
+      });
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+    <main className="flex min-h-screen items-center justify-center bg-[#0A0E14] px-6 py-16 text-[#F5F7FA] sm:px-10">
+      <div className="w-full max-w-md">
 
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">
-          Patient Login
+        <p
+          className="mb-2 text-xs uppercase tracking-wide text-[#22D3A6]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          PT-LOG
+        </p>
+
+        <h1
+          className="text-3xl font-medium sm:text-4xl"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Patient login
         </h1>
+        <p className="mt-2 text-sm text-[#8B95A7]">
+          Book an ambulance or track an existing request.
+        </p>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-
+        <form onSubmit={handleSubmit} className="mt-10 space-y-5">
           <div>
-            <label className="block font-medium mb-2">
-              Email
-            </label>
-
+            <label className={labelClass}>Email</label>
             <input
+              name="email"
               type="email"
-              placeholder="Enter email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  email: e.target.value,
-                })
-              }
-              className="w-full border p-3 rounded-lg"
               required
+              value={form.email}
+              onChange={handleChange}
+              placeholder="example@gmail.com"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-2">
-              Password
-            </label>
-
+            <label className={labelClass}>Password</label>
             <input
+              name="password"
               type="password"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  password: e.target.value,
-                })
-              }
-              className="w-full border p-3 rounded-lg"
               required
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Your password"
+              className={inputClass}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+            className="w-full rounded-md bg-[#FF4433] py-3.5 font-medium text-white transition hover:bg-[#E53A2B] disabled:opacity-50"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Logging in..." : "Log in"}
           </button>
-
-          {message && (
-            <p className="text-center font-medium mt-4">
-              {message}
-            </p>
-          )}
-
         </form>
 
+        <div className="my-6 flex items-center gap-4">
+          <div className="h-px flex-1 bg-[#1B2334]" />
+          <span
+            className="text-xs uppercase tracking-wide text-[#8B95A7]"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            Or
+          </span>
+          <div className="h-px flex-1 bg-[#1B2334]" />
+        </div>
+
+        <GoogleButton />
+
+        <p className="mt-8 text-center text-sm text-[#8B95A7]">
+          New here?{" "}
+          <Link href="/register" className="text-[#22D3A6] hover:underline">
+            Create an account
+          </Link>
+        </p>
       </div>
-    </div>
+    </main>
   );
 }

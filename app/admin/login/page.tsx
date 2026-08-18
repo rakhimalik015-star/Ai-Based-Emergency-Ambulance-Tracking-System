@@ -1,101 +1,123 @@
 "use client";
 
 import { useState } from "react";
-import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
-export default function AdminLogin() {
+const inputClass =
+  "w-full rounded-md border border-[#232B3D] bg-[#0D131F] px-4 py-3 text-[#F5F7FA] placeholder-[#4A5468] outline-none transition focus:border-[#FF4433] focus:ring-1 focus:ring-[#FF4433]";
 
+const labelClass = "mb-1.5 block text-sm text-[#8B95A7]";
+
+export default function AdminLoginPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ email: "", password: "" });
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
 
-  const handleLogin = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
 
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.success) {
+      if (!res.ok || !data.success) {
+        Swal.fire({
+          icon: "error",
+          title: "Access denied",
+          text: data.message || "Invalid admin credentials",
+        });
+        setLoading(false);
+        return;
+      }
 
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
-        title: "Admin Login Successful",
-        timer: 1500,
+        title: "Access granted",
+        timer: 1200,
         showConfirmButton: false,
       });
 
       router.push("/admin/dashboard");
-
-    } else {
-
+      router.refresh();
+    } catch (error) {
+      console.error("ADMIN LOGIN ERROR:", error);
       Swal.fire({
         icon: "error",
-        title: "Login Failed",
-        text: data.message,
+        title: "Error",
+        text: "Login failed. Try again.",
       });
-
+      setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <main className="flex min-h-screen items-center justify-center bg-[#0A0E14] px-6 py-16 text-[#F5F7FA] sm:px-10">
+      <div className="w-full max-w-md rounded-lg border border-[#232B3D] bg-[#0D131F] p-8">
 
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <p
+          className="mb-2 text-xs uppercase tracking-wide text-[#FF4433]"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          AD-LOG · RESTRICTED
+        </p>
 
-        <h1 className="text-3xl font-bold text-center text-red-600 mb-6">
-          Admin Login
+        <h1
+          className="text-2xl font-medium sm:text-3xl"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Admin console access
         </h1>
+        <p className="mt-2 text-sm text-[#8B95A7]">
+          Fleet, hospitals and bookings management.
+        </p>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          <div>
+            <label className={labelClass}>Email</label>
+            <input
+              name="email"
+              type="email"
+              required
+              value={form.email}
+              onChange={handleChange}
+              placeholder="admin@example.com"
+              className={inputClass}
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="Admin Email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                email: e.target.value,
-              })
-            }
-            className="w-full border p-3 rounded"
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                password: e.target.value,
-              })
-            }
-            className="w-full border p-3 rounded"
-          />
+          <div>
+            <label className={labelClass}>Password</label>
+            <input
+              name="password"
+              type="password"
+              required
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Your password"
+              className={inputClass}
+            />
+          </div>
 
           <button
             type="submit"
-            className="w-full bg-red-600 text-white py-3 rounded hover:bg-red-700"
+            disabled={loading}
+            className="w-full rounded-md bg-[#FF4433] py-3.5 font-medium text-white transition hover:bg-[#E53A2B] disabled:opacity-50"
           >
-            Admin Login
+            {loading ? "Verifying..." : "Enter console"}
           </button>
-
         </form>
-
       </div>
-
-    </div>
+    </main>
   );
 }
