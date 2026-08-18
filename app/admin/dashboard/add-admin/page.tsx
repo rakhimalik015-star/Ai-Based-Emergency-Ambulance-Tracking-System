@@ -1,19 +1,16 @@
-
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
 const inputClass =
-  "w-full rounded-md border border-[#232B3D] bg-[#0D131F] px-4 py-3 text-[#F5F7FA] placeholder-[#4A5468] outline-none transition focus:border-[#22D3A6] focus:ring-1 focus:ring-[#22D3A6]";
+  "w-full rounded-md border border-[#232B3D] bg-[#0D131F] px-4 py-3 text-[#F5F7FA] placeholder-[#4A5468] outline-none transition focus:border-[#FF4433] focus:ring-1 focus:ring-[#FF4433]";
 
 const labelClass = "mb-1.5 block text-sm text-[#8B95A7]";
 
-export default function DriverLoginPage() {
-  const router = useRouter();
+export default function AddAdminPage() {
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -24,7 +21,7 @@ export default function DriverLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/driver/login", {
+      const res = await fetch("/api/admin/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -35,8 +32,8 @@ export default function DriverLoginPage() {
       if (!res.ok || !data.success) {
         Swal.fire({
           icon: "error",
-          title: "Login failed",
-          text: data.message || "Invalid email or password",
+          title: "Could not create admin",
+          text: data.message,
         });
         setLoading(false);
         return;
@@ -44,46 +41,50 @@ export default function DriverLoginPage() {
 
       await Swal.fire({
         icon: "success",
-        title: "Welcome back",
-        timer: 1200,
-        showConfirmButton: false,
+        title: "Admin created",
+        text: `${data.admin.email} can now log in as admin.`,
       });
 
-      router.push("/driver/dashboard");
-      router.refresh();
+      setForm({ name: "", email: "", password: "" });
     } catch (error) {
-      console.error("DRIVER LOGIN ERROR:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Login failed. Try again.",
-      });
+      console.error("ADD ADMIN ERROR:", error);
+      Swal.fire({ icon: "error", title: "Error", text: "Something went wrong" });
+    } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0A0E14] px-6 py-16 text-[#F5F7FA] sm:px-10">
-      <div className="w-full max-w-md">
-
+    <main className="min-h-screen bg-[#0A0E14] px-6 py-16 text-[#F5F7FA] sm:px-10">
+      <div className="mx-auto max-w-lg">
         <p
-          className="mb-2 text-xs uppercase tracking-wide text-[#22D3A6]"
+          className="mb-2 text-xs uppercase tracking-wide text-[#FF4433]"
           style={{ fontFamily: "var(--font-mono)" }}
         >
-          DR-LOG
+          AD-ADD · RESTRICTED
         </p>
 
         <h1
-          className="text-3xl font-medium sm:text-4xl"
+          className="text-3xl font-medium"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Driver login
+          Add a new admin
         </h1>
         <p className="mt-2 text-sm text-[#8B95A7]">
-          View assigned trips and update your live location.
+          Only existing admins can create new admin accounts.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-10 space-y-5">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          <div>
+            <label className={labelClass}>Name</label>
+            <input
+              name="name"
+              required
+              value={form.name}
+              onChange={handleChange}
+              className={inputClass}
+            />
+          </div>
           <div>
             <label className={labelClass}>Email</label>
             <input
@@ -92,20 +93,17 @@ export default function DriverLoginPage() {
               required
               value={form.email}
               onChange={handleChange}
-              placeholder="driver@example.com"
               className={inputClass}
             />
           </div>
-
           <div>
-            <label className={labelClass}>Password</label>
+            <label className={labelClass}>Temporary password</label>
             <input
               name="password"
               type="password"
               required
               value={form.password}
               onChange={handleChange}
-              placeholder="Your password"
               className={inputClass}
             />
           </div>
@@ -115,14 +113,9 @@ export default function DriverLoginPage() {
             disabled={loading}
             className="w-full rounded-md bg-[#FF4433] py-3.5 font-medium text-white transition hover:bg-[#E53A2B] disabled:opacity-50"
           >
-            {loading ? "Logging in..." : "Log in"}
+            {loading ? "Creating..." : "Create admin"}
           </button>
         </form>
-
-        <p className="mt-8 text-center text-xs text-[#4A5468]">
-          Driver accounts are created by the admin. Contact your
-          dispatcher if you don't have login details.
-        </p>
       </div>
     </main>
   );
