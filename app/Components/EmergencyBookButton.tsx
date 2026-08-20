@@ -76,7 +76,7 @@ export default function EmergencyBookButton() {
           });
 
           // Live tracking page pe le jao
-         window.location.href = `/bookings/${data.booking.id}`;
+          window.location.href = `/bookings/${data.booking.id}`;
         } catch (error) {
           console.error("EMERGENCY BOOKING ERROR:", error);
           Swal.fire({
@@ -88,19 +88,32 @@ export default function EmergencyBookButton() {
         }
       },
       (error) => {
-        setLoading(false);
-        console.error("GPS ERROR:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Location access denied",
-          text: "Please allow location access to book an emergency ambulance.",
-        });
-      },
+  setLoading(false);
+  console.error("GPS ERROR CODE:", error.code, "MESSAGE:", error.message);
+
+  let message = "Please allow location access to book an emergency ambulance.";
+
+  if (error.code === error.PERMISSION_DENIED) {
+    message =
+      "Location access is blocked. Please enable it from your browser's site settings (click the lock icon near the address bar) and try again.";
+  } else if (error.code === error.POSITION_UNAVAILABLE) {
+    message =
+      "Unable to detect your location. Please check that Location Services are turned ON in your Windows settings, then try again.";
+  } else if (error.code === error.TIMEOUT) {
+    message = "Location request timed out. Please try again.";
+  }
+
+  Swal.fire({
+    icon: "error",
+    title: "Location access denied",
+    text: message,
+  });
+},
       {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 0,
-      }
+      },
     );
   }
 
