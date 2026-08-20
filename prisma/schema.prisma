@@ -66,20 +66,23 @@ model Patient {
 // ==========================================
 // BOOKING
 // ==========================================
-
 model Booking {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  // Patient
-  patientId String  @db.ObjectId
-  patient   Patient @relation(fields: [patientId], references: [id])
+  // Patient (ab optional — guest/emergency booking allow karne ke liye)
+  patientId String?  @db.ObjectId
+  patient   Patient? @relation(fields: [patientId], references: [id])
 
   // Booking details
   pickupLocation String
-  destination    String
-  emergencyType  String
-  ambulanceType  String
+  destination    String  @default("Nearest Hospital")
+  emergencyType  String  @default("General Emergency")
+  ambulanceType  String  @default("Basic Life Support")
   mobile         String
+
+  // GPS coordinates — live tracking ke liye zaroori
+  latitude  Float?
+  longitude Float?
 
   // Pending / Approved / On the Way /
   // Arrived / Completed / Cancelled

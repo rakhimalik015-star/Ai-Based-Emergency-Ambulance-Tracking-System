@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Patient {
   name: string;
@@ -17,6 +18,7 @@ interface Patient {
 export default function ProfilePage() {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -93,12 +95,11 @@ export default function ProfilePage() {
           </div>
 
           <button
-            onClick={() => alert("Edit Profile feature coming soon")}
-            className="px-6 py-3 rounded-xl bg-cyan-400 text-slate-950 font-bold hover:bg-cyan-300 transition shadow-lg shadow-cyan-400/10"
-          >
-            ✏️ Edit Profile
-          </button>
-
+  onClick={() => router.push("/profile/edit")}
+  className="px-6 py-3 rounded-xl bg-cyan-400 text-slate-950 font-bold hover:bg-cyan-300 transition shadow-lg shadow-cyan-400/10"
+>
+  ✏️ Edit Profile
+</button>
         </div>
 
 
