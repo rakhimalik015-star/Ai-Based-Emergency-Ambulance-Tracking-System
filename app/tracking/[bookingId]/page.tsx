@@ -38,12 +38,91 @@ const TrackingMap = dynamic(
     {
         ssr: false,
         loading: () => (
-            <div className="h-[450px] flex items-center justify-center bg-gray-200 rounded-xl">
-                Loading Map...
+            <div className="h-[450px] flex items-center justify-center rounded-2xl bg-[#0B1020] border border-white/6">
+                <div className="text-center">
+                    <div className="relative mx-auto mb-4 h-12 w-12">
+                        <div className="absolute inset-0 rounded-full border-2 border-cyan-400/20" />
+                        <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-cyan-400" />
+                    </div>
+
+                    <p className="text-sm font-semibold text-white">
+                        Loading Live Map
+                    </p>
+
+                    <p className="mt-1 text-xs text-slate-500">
+                        Connecting to ambulance GPS...
+                    </p>
+                </div>
             </div>
         ),
     }
 );
+
+/* =====================================================
+   STATUS CONFIG
+===================================================== */
+
+function getStatusStyle(status: string) {
+    switch (status) {
+        case "Approved":
+            return {
+                wrapper:
+                    "border-cyan-400/20 bg-cyan-400/4 text-cyan-300",
+                dot: "bg-cyan-400",
+            };
+
+        case "On the Way":
+            return {
+                wrapper:
+                    "border-violet-400/20 bg-violet-400/4 text-violet-300",
+                dot: "bg-violet-400",
+            };
+
+        case "Arrived":
+            return {
+                wrapper:
+                    "border-lime-400/20 bg-lime-400/4 text-lime-300",
+                dot: "bg-lime-400",
+            };
+
+        case "Completed":
+            return {
+                wrapper:
+                    "border-slate-400/20 bg-slate-400/4 text-slate-300",
+                dot: "bg-slate-400",
+            };
+
+        default:
+            return {
+                wrapper:
+                    "border-white/10 bg-white/4 text-slate-300",
+                dot: "bg-slate-400",
+            };
+    }
+}
+
+function getAmbulanceStatusStyle(status?: string) {
+    switch (status) {
+        case "Available":
+            return "border-lime-400/20 bg-lime-400/4 text-lime-300";
+
+        case "Busy":
+            return "border-amber-400/20 bg-amber-400/4 text-amber-300";
+
+        case "Emergency":
+            return "border-rose-400/20 bg-rose-400/4 text-rose-300";
+
+        case "Maintenance":
+            return "border-slate-400/20 bg-slate-400/4 text-slate-300";
+
+        default:
+            return "border-white/10 bg-white/4 text-slate-300";
+    }
+}
+
+/* =====================================================
+   MAIN PAGE
+===================================================== */
 
 export default function TrackingPage() {
     const params = useParams();
@@ -62,10 +141,6 @@ export default function TrackingPage() {
     const [error, setError] =
         useState("");
 
-    // ==========================================
-    // HOSPITAL RECOMMENDATION
-    // ==========================================
-
     const [hospitalData, setHospitalData] =
         useState<HospitalRecommendation | null>(null);
 
@@ -75,9 +150,9 @@ export default function TrackingPage() {
     const [hospitalError, setHospitalError] =
         useState("");
 
-    // ==========================================
-    // GET HOSPITAL RECOMMENDATION
-    // ==========================================
+    /* =====================================================
+       HOSPITAL RECOMMENDATION
+    ===================================================== */
 
     const getHospitalRecommendation = async (
         latitude: number,
@@ -92,8 +167,7 @@ export default function TrackingPage() {
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type":
-                            "application/json",
+                        "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
                         latitude,
@@ -135,9 +209,9 @@ export default function TrackingPage() {
         }
     };
 
-    // ==========================================
-    // GET TRACKING DATA
-    // ==========================================
+    /* =====================================================
+       TRACKING API
+    ===================================================== */
 
     const getTracking = async () => {
         try {
@@ -160,15 +234,9 @@ export default function TrackingPage() {
 
                 setError("");
 
-                // ==================================
-                // HOSPITAL RECOMMENDATION
-                // ==================================
-
                 if (
-                    currentTracking.latitude !==
-                        null &&
-                    currentTracking.longitude !==
-                        null
+                    currentTracking.latitude !== null &&
+                    currentTracking.longitude !== null
                 ) {
                     await getHospitalRecommendation(
                         currentTracking.latitude,
@@ -198,9 +266,9 @@ export default function TrackingPage() {
         }
     };
 
-    // ==========================================
-    // INITIAL LOAD + AUTO REFRESH
-    // ==========================================
+    /* =====================================================
+       AUTO REFRESH
+    ===================================================== */
 
     useEffect(() => {
         if (!bookingId) return;
@@ -214,51 +282,46 @@ export default function TrackingPage() {
         return () => {
             clearInterval(interval);
         };
-
     }, [bookingId]);
 
-    // ==========================================
-    // LOADING
-    // ==========================================
+    /* =====================================================
+       LOADING
+    ===================================================== */
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="min-h-screen bg-[#070A12] flex items-center justify-center px-6">
+
                 <div className="text-center">
 
-                    <div className="text-5xl mb-4">
-                        🚑
+                    <div className="relative mx-auto mb-7 h-20 w-20">
+
+                        <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500/20 via-cyan-400/10 to-lime-400/10 blur-xl" />
+
+                        <div className="relative flex h-20 w-20 items-center justify-center rounded-3xl border border-white/10 bg-white/4 shadow-2xl">
+
+                            <span className="text-4xl">
+                                🚑
+                            </span>
+
+                        </div>
+
                     </div>
 
-                    <h1 className="text-2xl font-semibold">
-                        Loading Live Tracking...
-                    </h1>
+                    <div className="flex items-center justify-center gap-2">
 
-                </div>
-            </div>
-        );
-    }
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-violet-400" />
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-cyan-400 [animation-delay:150ms]" />
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-lime-400 [animation-delay:300ms]" />
 
-    // ==========================================
-    // ERROR
-    // ==========================================
-
-    if (error || !tracking) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-
-                <div className="bg-white shadow rounded-xl p-8 text-center">
-
-                    <div className="text-5xl mb-4">
-                        ❌
                     </div>
 
-                    <h1 className="text-2xl font-bold text-red-600">
-                        Tracking data not found
+                    <h1 className="mt-5 text-xl font-bold text-white">
+                        Loading Live Tracking
                     </h1>
 
-                    <p className="text-gray-600 mt-2">
-                        {error}
+                    <p className="mt-2 text-sm text-slate-500">
+                        Connecting to Fleet Operations Center...
                     </p>
 
                 </div>
@@ -267,9 +330,44 @@ export default function TrackingPage() {
         );
     }
 
-    // ==========================================
-    // STATUS
-    // ==========================================
+    /* =====================================================
+       ERROR
+    ===================================================== */
+
+    if (error || !tracking) {
+        return (
+            <div className="min-h-screen bg-[#070A12] flex items-center justify-center px-6">
+
+                <div className="w-full max-w-md rounded-3xl border border-rose-400/20 bg-white/4 p-8 text-center shadow-2xl">
+
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-rose-400/20 bg-rose-400/4 text-3xl">
+                        ❌
+                    </div>
+
+                    <h1 className="mt-6 text-2xl font-bold text-white">
+                        Tracking Unavailable
+                    </h1>
+
+                    <p className="mt-3 text-sm leading-6 text-slate-400">
+                        {error || "Tracking data not found."}
+                    </p>
+
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="mt-6 rounded-xl bg-gradient-to-r from-violet-500 via-cyan-400 to-lime-400 px-6 py-3 text-sm font-bold text-slate-950 transition hover:scale-[1.02]"
+                    >
+                        Retry Tracking
+                    </button>
+
+                </div>
+
+            </div>
+        );
+    }
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
 
     const isMoving =
         tracking.status === "On the Way";
@@ -280,433 +378,742 @@ export default function TrackingPage() {
     const isCompleted =
         tracking.status === "Completed";
 
-    // ==========================================
-    // UI
-    // ==========================================
+    const statusStyle =
+        getStatusStyle(tracking.status);
+
+    /* =====================================================
+       UI
+    ===================================================== */
 
     return (
-        <div className="min-h-screen bg-gray-100 p-6 md:p-8">
+        <div className="min-h-screen bg-[#070A12] text-white">
 
-            {/* ======================================
-                HEADER
-            ====================================== */}
+            {/* BACKGROUND GLOW */}
 
-            <div className="mb-8">
+            <div className="pointer-events-none fixed inset-0 overflow-hidden">
 
-                <h1 className="text-3xl font-bold">
-                    🚑 Live Ambulance Tracking
-                </h1>
+                <div className="absolute -left-40 -top-40 h-96 w-96 rounded-full bg-violet-600/10 blur-3xl" />
 
-                <p className="text-gray-500 mt-2">
-                    Track your ambulance location and trip status.
-                </p>
+                <div className="absolute right-0 top-1/3 h-96 w-96 rounded-full bg-cyan-500/8 blur-3xl" />
+
+                <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-lime-400/5 blur-3xl" />
 
             </div>
 
-            {/* ======================================
-                BOOKING STATUS
-            ====================================== */}
+            <main className="relative mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
 
-            <div className="bg-white rounded-xl shadow p-6 mb-6">
+                {/* =================================================
+                    HEADER
+                ================================================= */}
 
-                <h2 className="text-2xl font-bold mb-6">
-                    Booking Status
-                </h2>
+                <header className="mb-8">
 
-                <div className="mb-5">
-
-                    <p className="text-gray-500">
-                        Booking ID
-                    </p>
-
-                    <p className="font-semibold break-all">
-                        {tracking.bookingId}
-                    </p>
-
-                </div>
-
-                <div>
-
-                    <p className="text-gray-500 mb-2">
-                        Current Status
-                    </p>
-
-                    <span
-                        className={`inline-block px-5 py-2 rounded-full font-semibold text-white ${
-                            tracking.status ===
-                            "Approved"
-                                ? "bg-yellow-500"
-                                : tracking.status ===
-                                  "On the Way"
-                                ? "bg-blue-600"
-                                : tracking.status ===
-                                  "Arrived"
-                                ? "bg-green-600"
-                                : tracking.status ===
-                                  "Completed"
-                                ? "bg-gray-600"
-                                : "bg-gray-500"
-                        }`}
-                    >
-                        {tracking.status}
-                    </span>
-
-                </div>
-
-                {/* TRIP PROGRESS */}
-
-                <div className="mt-8">
-
-                    <p className="font-bold mb-4">
-                        Trip Progress
-                    </p>
-
-                    <div className="flex flex-wrap items-center gap-2">
-
-                        <span className="px-3 py-2 rounded-lg bg-green-100 text-green-700 font-semibold">
-                            ✓ Approved
-                        </span>
-
-                        <span>→</span>
-
-                        <span
-                            className={`px-3 py-2 rounded-lg font-semibold ${
-                                isMoving ||
-                                isArrived ||
-                                isCompleted
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-gray-100 text-gray-500"
-                            }`}
-                        >
-                            {isMoving ||
-                            isArrived ||
-                            isCompleted
-                                ? "✓ On the Way"
-                                : "On the Way"}
-                        </span>
-
-                        <span>→</span>
-
-                        <span
-                            className={`px-3 py-2 rounded-lg font-semibold ${
-                                isArrived ||
-                                isCompleted
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-gray-100 text-gray-500"
-                            }`}
-                        >
-                            {isArrived ||
-                            isCompleted
-                                ? "✓ Arrived"
-                                : "Arrived"}
-                        </span>
-
-                        <span>→</span>
-
-                        <span
-                            className={`px-3 py-2 rounded-lg font-semibold ${
-                                isCompleted
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-gray-100 text-gray-500"
-                            }`}
-                        >
-                            {isCompleted
-                                ? "✓ Completed"
-                                : "Completed"}
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            {/* ======================================
-                AMBULANCE INFORMATION
-            ====================================== */}
-
-            {!tracking.ambulanceAssigned ? (
-
-                <div className="bg-white rounded-xl shadow p-6 mb-6">
-
-                    <h2 className="text-xl font-bold text-orange-600">
-                        🚑 Ambulance Not Assigned
-                    </h2>
-
-                    <p className="mt-2 text-gray-600">
-                        Admin has not assigned an ambulance yet.
-                    </p>
-
-                </div>
-
-            ) : (
-
-                <div className="bg-white rounded-xl shadow p-6 mb-6">
-
-                    <h2 className="text-2xl font-bold mb-6">
-                        Ambulance Information
-                    </h2>
-
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
 
                         <div>
 
-                            <p className="text-gray-500">
-                                Vehicle Number
-                            </p>
+                            <div className="mb-3 flex items-center gap-2">
 
-                            <p className="font-semibold text-lg">
-                                🚑 {tracking.vehicleNo}
-                            </p>
+                                <span className="h-2 w-2 animate-pulse rounded-full bg-lime-400 shadow-[0_0_12px_rgba(163,230,53,0.8)]" />
 
-                        </div>
-
-                        <div>
-
-                            <p className="text-gray-500">
-                                Ambulance Type
-                            </p>
-
-                            <p className="font-semibold text-lg">
-                                {tracking.ambulanceType}
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <p className="text-gray-500">
-                                Ambulance Status
-                            </p>
-
-                            <p
-                                className={`font-semibold text-lg ${
-                                    tracking.ambulanceStatus ===
-                                    "Busy"
-                                        ? "text-red-600"
-                                        : "text-green-600"
-                                }`}
-                            >
-                                {tracking.ambulanceStatus}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    {/* MOVING */}
-
-                    {isMoving && (
-                        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-
-                            <p className="font-bold text-blue-700">
-                                🟢 Ambulance is moving
-                            </p>
-
-                            <p className="text-blue-600 mt-1">
-                                Live location is updating automatically.
-                            </p>
-
-                        </div>
-                    )}
-
-                    {/* ARRIVED */}
-
-                    {isArrived && (
-                        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-
-                            <p className="font-bold text-green-700">
-                                📍 Ambulance has arrived
-                            </p>
-
-                            <p className="text-green-600 mt-1">
-                                Ambulance is currently at the pickup location.
-                            </p>
-
-                        </div>
-                    )}
-
-                    {/* COMPLETED */}
-
-                    {isCompleted && (
-                        <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-
-                            <p className="font-bold text-gray-700">
-                                ✅ Trip Completed
-                            </p>
-
-                            <p className="text-gray-600 mt-1">
-                                This ambulance trip has been completed.
-                            </p>
-
-                        </div>
-                    )}
-
-                    {/* ==================================
-                        MAP
-                    ================================== */}
-
-                    {tracking.latitude !== null &&
-                    tracking.longitude !== null ? (
-
-                        <div className="mt-8">
-
-                            <h3 className="text-xl font-bold mb-4">
-                                🗺️ Live Ambulance Location
-                            </h3>
-
-                            <TrackingMap
-                                latitude={
-                                    tracking.latitude
-                                }
-                                longitude={
-                                    tracking.longitude
-                                }
-                                vehicleNo={
-                                    tracking.vehicleNo
-                                }
-                            />
-
-                        </div>
-
-                    ) : (
-
-                        <div className="mt-8 p-6 bg-gray-100 rounded-lg">
-
-                            <p className="text-orange-600 font-semibold">
-                                ⏳ Waiting for ambulance GPS location...
-                            </p>
-
-                            <p className="text-gray-500 mt-1">
-                                Driver has not sent a location yet.
-                            </p>
-
-                        </div>
-
-                    )}
-
-                    {/* ==================================
-                        LIVE COORDINATES
-                    ================================== */}
-
-                    {tracking.latitude !== null &&
-                    tracking.longitude !== null && (
-
-                        <div className="mt-6 p-5 bg-gray-100 rounded-lg">
-
-                            <h3 className="text-xl font-bold mb-4">
-                                📍 Live Coordinates
-                            </h3>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-
-                                <div>
-
-                                    <p className="text-gray-500">
-                                        Latitude
-                                    </p>
-
-                                    <p className="font-semibold">
-                                        {tracking.latitude.toFixed(
-                                            6
-                                        )}
-                                    </p>
-
-                                </div>
-
-                                <div>
-
-                                    <p className="text-gray-500">
-                                        Longitude
-                                    </p>
-
-                                    <p className="font-semibold">
-                                        {tracking.longitude.toFixed(
-                                            6
-                                        )}
-                                    </p>
-
-                                </div>
+                                <span className="text-xs font-bold uppercase tracking-[0.25em] text-lime-300">
+                                    Live Fleet Tracking
+                                </span>
 
                             </div>
 
-                            <p className="mt-4 text-green-600 font-semibold">
-                                🟢 Ambulance location is available
+                            <h1 className="text-3xl font-black tracking-tight sm:text-4xl">
+
+                                <span className="text-white">
+                                    Ambulance
+                                </span>{" "}
+
+                                <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-lime-400 bg-clip-text text-transparent">
+                                    Operations
+                                </span>
+
+                            </h1>
+
+                            <p className="mt-2 max-w-2xl text-sm text-slate-500 sm:text-base">
+                                Real-time ambulance location, trip status
+                                and AI-powered hospital recommendation.
                             </p>
 
                         </div>
 
-                    )}
+                        <div className="rounded-2xl border border-white/6 bg-white/4 px-4 py-3 backdrop-blur-xl">
 
-                    {/* ==================================
-                        AI HOSPITAL RECOMMENDATION
-                    ================================== */}
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                                Booking ID
+                            </p>
 
-                    <div className="mt-8">
+                            <p className="mt-1 max-w-[250px] truncate font-mono text-sm font-semibold text-cyan-300">
+                                {tracking.bookingId}
+                            </p>
 
-                        <div className="border-t pt-8">
+                        </div>
 
-                            <h2 className="text-2xl font-bold mb-2">
-                                🤖 AI Hospital Recommendation
+                    </div>
+
+                </header>
+
+                {/* =================================================
+                    TOP STATUS GRID
+                ================================================= */}
+
+                <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+                    {/* STATUS */}
+
+                    <div className="rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl">
+
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                            Current Status
+                        </p>
+
+                        <div className="mt-4 flex items-center gap-3">
+
+                            <span
+                                className={`h-3 w-3 rounded-full ${statusStyle.dot} shadow-[0_0_12px_currentColor]`}
+                            />
+
+                            <span
+                                className={`rounded-full border px-3 py-1.5 text-sm font-bold ${statusStyle.wrapper}`}
+                            >
+                                {tracking.status}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {/* VEHICLE */}
+
+                    <div className="rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl">
+
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                            Vehicle
+                        </p>
+
+                        <p className="mt-3 text-xl font-black text-white">
+                            🚑 {tracking.vehicleNo || "Not Assigned"}
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-500">
+                            {tracking.ambulanceType || "Emergency Vehicle"}
+                        </p>
+
+                    </div>
+
+                    {/* GPS */}
+
+                    <div className="rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl">
+
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                            GPS Status
+                        </p>
+
+                        <div className="mt-3 flex items-center gap-3">
+
+                            <span className="relative flex h-3 w-3">
+
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-lime-400 opacity-60" />
+
+                                <span className="relative inline-flex h-3 w-3 rounded-full bg-lime-400" />
+
+                            </span>
+
+                            <span className="font-bold text-lime-300">
+                                {tracking.latitude !== null
+                                    ? "GPS Connected"
+                                    : "Waiting for GPS"}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    {/* REFRESH */}
+
+                    <div className="rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl">
+
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                            Last Update
+                        </p>
+
+                        <p className="mt-3 text-xl font-black text-white">
+                            {lastUpdated
+                                ? lastUpdated.toLocaleTimeString()
+                                : "--:--:--"}
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-500">
+                            Auto refresh every 5 seconds
+                        </p>
+
+                    </div>
+
+                </section>
+
+                {/* =================================================
+                    TRIP PROGRESS
+                ================================================= */}
+
+                <section className="mb-6 rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl sm:p-6">
+
+                    <div className="mb-6 flex items-center justify-between">
+
+                        <div>
+
+                            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+                                Mission Timeline
+                            </p>
+
+                            <h2 className="mt-1 text-xl font-black">
+                                Trip Progress
                             </h2>
 
-                            <p className="text-gray-500 mb-6">
-                                Finding the best nearby hospital based on
-                                distance, beds, ICU availability and traffic.
-                            </p>
-
                         </div>
 
-                        {/* LOADING */}
+                        <span className="hidden rounded-full border border-lime-400/20 bg-lime-400/4 px-3 py-1.5 text-xs font-bold text-lime-300 sm:block">
+                            LIVE
+                        </span>
 
-                        {hospitalLoading && (
-                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-4">
+
+                        {[
+                            {
+                                label: "Approved",
+                                active: true,
+                                icon: "✓",
+                            },
+                            {
+                                label: "On the Way",
+                                active:
+                                    isMoving ||
+                                    isArrived ||
+                                    isCompleted,
+                                icon: "🚑",
+                            },
+                            {
+                                label: "Arrived",
+                                active:
+                                    isArrived ||
+                                    isCompleted,
+                                icon: "📍",
+                            },
+                            {
+                                label: "Completed",
+                                active: isCompleted,
+                                icon: "✓",
+                            },
+                        ].map((step, index) => (
+
+                            <div
+                                key={step.label}
+                                className={`relative rounded-xl border p-4 ${
+                                    step.active
+                                        ? "border-cyan-400/20 bg-cyan-400/4"
+                                        : "border-white/6 bg-white/[0.02]"
+                                }`}
+                            >
 
                                 <div className="flex items-center gap-3">
 
-                                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
+                                    <div
+                                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${
+                                            step.active
+                                                ? "bg-gradient-to-br from-violet-500 via-cyan-400 to-lime-400 text-slate-950"
+                                                : "bg-white/5 text-slate-600"
+                                        }`}
+                                    >
+                                        {step.icon}
+                                    </div>
 
-                                    <p className="font-semibold text-blue-700">
-                                        🤖 AI is finding the best hospital...
+                                    <div>
+
+                                        <p
+                                            className={`text-sm font-bold ${
+                                                step.active
+                                                    ? "text-white"
+                                                    : "text-slate-600"
+                                            }`}
+                                        >
+                                            {step.label}
+                                        </p>
+
+                                        <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-600">
+                                            Step {index + 1}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                </section>
+
+                {/* =================================================
+                    AMBULANCE + MAP
+                ================================================= */}
+
+                {tracking.ambulanceAssigned ? (
+
+                    <section className="mb-6 grid gap-6 xl:grid-cols-[380px_1fr]">
+
+                        {/* LEFT INFO */}
+
+                        <div className="rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl">
+
+                            <div className="mb-6">
+
+                                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-400">
+                                    Fleet Unit
+                                </p>
+
+                                <h2 className="mt-1 text-2xl font-black">
+                                    Ambulance Information
+                                </h2>
+
+                            </div>
+
+                            {/* VEHICLE CARD */}
+
+                            <div className="mb-5 overflow-hidden rounded-2xl border border-white/6 bg-[#0B1020]">
+
+                                <div className="flex h-32 items-center justify-center bg-gradient-to-br from-violet-500/10 via-cyan-400/5 to-lime-400/5">
+
+                                    <span className="text-7xl drop-shadow-[0_0_20px_rgba(34,211,238,0.25)]">
+                                        🚑
+                                    </span>
+
+                                </div>
+
+                                <div className="p-5">
+
+                                    <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                        Vehicle Number
+                                    </p>
+
+                                    <p className="mt-1 text-2xl font-black text-white">
+                                        {tracking.vehicleNo || "Unknown"}
                                     </p>
 
                                 </div>
 
                             </div>
-                        )}
 
-                        {/* ERROR */}
+                            {/* INFO */}
 
-                        {!hospitalLoading &&
-                        hospitalError && (
-                            <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+                            <div className="space-y-3">
 
-                                <p className="font-semibold text-red-600">
-                                    ❌ {hospitalError}
-                                </p>
+                                <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-4">
+
+                                    <span className="text-sm text-slate-500">
+                                        Type
+                                    </span>
+
+                                    <span className="font-semibold text-white">
+                                        {tracking.ambulanceType || "Emergency"}
+                                    </span>
+
+                                </div>
+
+                                <div className="flex items-center justify-between rounded-xl border border-white/6 bg-white/[0.02] p-4">
+
+                                    <span className="text-sm text-slate-500">
+                                        Status
+                                    </span>
+
+                                    <span
+                                        className={`rounded-full border px-3 py-1 text-xs font-bold ${getAmbulanceStatusStyle(
+                                            tracking.ambulanceStatus
+                                        )}`}
+                                    >
+                                        {tracking.ambulanceStatus || "Unknown"}
+                                    </span>
+
+                                </div>
 
                             </div>
-                        )}
 
-                        {/* RECOMMENDED HOSPITAL */}
+                            {/* LIVE MESSAGE */}
 
-                        {!hospitalLoading &&
-                        !hospitalError &&
-                        hospitalData && (
+                            {isMoving && (
+
+                                <div className="mt-5 rounded-xl border border-violet-400/20 bg-violet-400/4 p-4">
+
+                                    <div className="flex items-center gap-3">
+
+                                        <span className="relative flex h-3 w-3">
+
+                                            <span className="absolute h-full w-full animate-ping rounded-full bg-violet-400 opacity-60" />
+
+                                            <span className="relative h-3 w-3 rounded-full bg-violet-400" />
+
+                                        </span>
+
+                                        <p className="text-sm font-bold text-violet-300">
+                                            Ambulance is moving
+                                        </p>
+
+                                    </div>
+
+                                    <p className="mt-2 text-xs leading-5 text-slate-500">
+                                        Live GPS location is being updated automatically.
+                                    </p>
+
+                                </div>
+
+                            )}
+
+                            {isArrived && (
+
+                                <div className="mt-5 rounded-xl border border-lime-400/20 bg-lime-400/4 p-4">
+
+                                    <p className="font-bold text-lime-300">
+                                        📍 Ambulance has arrived
+                                    </p>
+
+                                    <p className="mt-2 text-xs text-slate-500">
+                                        Ambulance is currently at the pickup location.
+                                    </p>
+
+                                </div>
+
+                            )}
+
+                            {isCompleted && (
+
+                                <div className="mt-5 rounded-xl border border-white/6 bg-white/[0.02] p-4">
+
+                                    <p className="font-bold text-slate-300">
+                                        ✓ Trip Completed
+                                    </p>
+
+                                    <p className="mt-2 text-xs text-slate-500">
+                                        This ambulance trip has been completed.
+                                    </p>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                        {/* RIGHT MAP */}
+
+                        <div className="rounded-2xl border border-white/6 bg-white/4 p-2 shadow-2xl backdrop-blur-xl sm:p-3">
+
+                            <div className="mb-3 flex flex-col gap-2 px-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
+
+                                <div>
+
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+                                        GPS Command View
+                                    </p>
+
+                                    <h2 className="mt-1 text-xl font-black">
+                                        Live Ambulance Location
+                                    </h2>
+
+                                </div>
+
+                                <div className="flex items-center gap-2">
+
+                                    <span className="h-2 w-2 animate-pulse rounded-full bg-lime-400" />
+
+                                    <span className="text-xs font-semibold text-lime-300">
+                                        LIVE
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            {tracking.latitude !== null &&
+                            tracking.longitude !== null ? (
+
+                                <div className="overflow-hidden rounded-xl border border-white/6">
+
+                                    <TrackingMap
+                                        latitude={
+                                            tracking.latitude
+                                        }
+                                        longitude={
+                                            tracking.longitude
+                                        }
+                                        vehicleNo={
+                                            tracking.vehicleNo
+                                        }
+                                    />
+
+                                </div>
+
+                            ) : (
+
+                                <div className="flex h-[450px] items-center justify-center rounded-xl border border-white/6 bg-[#0B1020]">
+
+                                    <div className="text-center">
+
+                                        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-400/4 text-2xl">
+                                            📡
+                                        </div>
+
+                                        <p className="mt-4 font-bold text-amber-300">
+                                            Waiting for GPS
+                                        </p>
+
+                                        <p className="mt-1 text-sm text-slate-500">
+                                            Driver has not sent a location yet.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            )}
+
+                        </div>
+
+                    </section>
+
+                ) : (
+
+                    <section className="mb-6 rounded-2xl border border-amber-400/20 bg-amber-400/4 p-6">
+
+                        <div className="flex items-start gap-4">
+
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-400/10 text-2xl">
+                                🚑
+                            </div>
 
                             <div>
 
-                                <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-300 rounded-xl p-6">
+                                <h2 className="font-bold text-amber-300">
+                                    Ambulance Not Assigned
+                                </h2>
 
-                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <p className="mt-1 text-sm text-slate-500">
+                                    Admin has not assigned an ambulance to this booking yet.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                )}
+
+                {/* =================================================
+                    COORDINATES
+                ================================================= */}
+
+                {tracking.latitude !== null &&
+                tracking.longitude !== null && (
+
+                    <section className="mb-6 rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl">
+
+                        <div className="mb-5 flex items-center justify-between">
+
+                            <div>
+
+                                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+                                    GPS Telemetry
+                                </p>
+
+                                <h2 className="mt-1 text-xl font-black">
+                                    Live Coordinates
+                                </h2>
+
+                            </div>
+
+                            <span className="rounded-full border border-lime-400/20 bg-lime-400/4 px-3 py-1 text-xs font-bold text-lime-300">
+                                CONNECTED
+                            </span>
+
+                        </div>
+
+                        <div className="grid gap-4 md:grid-cols-2">
+
+                            <div className="rounded-xl border border-white/6 bg-[#0B1020] p-5">
+
+                                <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                    Latitude
+                                </p>
+
+                                <p className="mt-2 font-mono text-xl font-bold text-cyan-300">
+                                    {tracking.latitude.toFixed(6)}
+                                </p>
+
+                            </div>
+
+                            <div className="rounded-xl border border-white/6 bg-[#0B1020] p-5">
+
+                                <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                    Longitude
+                                </p>
+
+                                <p className="mt-2 font-mono text-xl font-bold text-violet-300">
+                                    {tracking.longitude.toFixed(6)}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                )}
+
+                {/* =================================================
+                    AI HOSPITAL RECOMMENDATION
+                ================================================= */}
+
+                <section className="mb-6 rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl sm:p-6">
+
+                    <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div>
+
+                            <div className="flex items-center gap-2">
+
+                                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-400/10">
+                                    🤖
+                                </span>
+
+                                <div>
+
+                                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-400">
+                                        AI Decision Engine
+                                    </p>
+
+                                    <h2 className="text-xl font-black">
+                                        Hospital Recommendation
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+                            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
+                                Finding the best nearby hospital using distance,
+                                available beds, ICU capacity, emergency support
+                                and traffic conditions.
+                            </p>
+
+                        </div>
+
+                        <div className="rounded-xl border border-violet-400/20 bg-violet-400/4 px-4 py-3 text-center">
+
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-violet-300">
+                                AI POWERED
+                            </p>
+
+                            <p className="mt-1 text-xs text-slate-500">
+                                Real-time analysis
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    {/* LOADING */}
+
+                    {hospitalLoading && (
+
+                        <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/4 p-8">
+
+                            <div className="flex flex-col items-center justify-center text-center">
+
+                                <div className="relative h-14 w-14">
+
+                                    <div className="absolute inset-0 rounded-full border-2 border-cyan-400/10" />
+
+                                    <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-cyan-400" />
+
+                                </div>
+
+                                <p className="mt-5 font-bold text-cyan-300">
+                                    AI is analyzing nearby hospitals...
+                                </p>
+
+                                <p className="mt-2 text-xs text-slate-500">
+                                    Checking beds, ICU, emergency support and traffic.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+                    {/* ERROR */}
+
+                    {!hospitalLoading &&
+                    hospitalError && (
+
+                        <div className="rounded-2xl border border-rose-400/20 bg-rose-400/4 p-5">
+
+                            <div className="flex gap-3">
+
+                                <span className="text-xl">
+                                    ⚠️
+                                </span>
+
+                                <div>
+
+                                    <p className="font-bold text-rose-300">
+                                        Recommendation Unavailable
+                                    </p>
+
+                                    <p className="mt-1 text-sm text-slate-500">
+                                        {hospitalError}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    )}
+
+                    {/* RECOMMENDED */}
+
+                    {!hospitalLoading &&
+                    !hospitalError &&
+                    hospitalData && (
+
+                        <div>
+
+                            <div className="relative overflow-hidden rounded-2xl border border-lime-400/20 bg-gradient-to-br from-lime-400/6 via-cyan-400/4 to-violet-400/6 p-5 sm:p-6">
+
+                                <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-lime-400/5 blur-3xl" />
+
+                                <div className="relative">
+
+                                    <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
 
                                         <div>
 
-                                            <p className="text-green-600 font-bold text-sm uppercase">
-                                                ⭐ Recommended Hospital
-                                            </p>
+                                            <div className="flex items-center gap-2">
 
-                                            <h3 className="text-2xl font-bold mt-1">
+                                                <span className="rounded-full border border-lime-400/20 bg-lime-400/4 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-lime-300">
+                                                    ★ Recommended
+                                                </span>
+
+                                            </div>
+
+                                            <h3 className="mt-3 text-2xl font-black text-white">
                                                 🏥{" "}
                                                 {
                                                     hospitalData
@@ -717,13 +1124,13 @@ export default function TrackingPage() {
 
                                         </div>
 
-                                        <div className="bg-green-600 text-white px-5 py-3 rounded-xl text-center">
+                                        <div className="rounded-2xl border border-lime-400/20 bg-[#070A12]/60 px-6 py-4 text-center">
 
-                                            <p className="text-sm">
+                                            <p className="text-[10px] uppercase tracking-widest text-lime-300">
                                                 AI Score
                                             </p>
 
-                                            <p className="text-2xl font-bold">
+                                            <p className="mt-1 text-3xl font-black text-lime-300">
                                                 {
                                                     hospitalData
                                                         .recommendedHospital
@@ -735,124 +1142,106 @@ export default function TrackingPage() {
 
                                     </div>
 
-                                    {/* DETAILS */}
+                                    {/* HOSPITAL STATS */}
 
-                                    <div className="grid md:grid-cols-4 gap-4 mt-6">
+                                    <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
 
-                                        <div className="bg-white rounded-lg p-4">
-
-                                            <p className="text-gray-500 text-sm">
-                                                Distance
-                                            </p>
-
-                                            <p className="font-bold text-lg">
-                                                {
-                                                    hospitalData
-                                                        .recommendedHospital
-                                                        .distance
-                                                }{" "}
-                                                km
-                                            </p>
-
-                                        </div>
-
-                                        <div className="bg-white rounded-lg p-4">
-
-                                            <p className="text-gray-500 text-sm">
-                                                Beds Available
-                                            </p>
-
-                                            <p className="font-bold text-lg">
-                                                {
-                                                    hospitalData
-                                                        .recommendedHospital
-                                                        .bedsAvailable
-                                                }
-                                            </p>
-
-                                        </div>
-
-                                        <div className="bg-white rounded-lg p-4">
-
-                                            <p className="text-gray-500 text-sm">
-                                                ICU Available
-                                            </p>
-
-                                            <p className="font-bold text-lg">
-                                                {
-                                                    hospitalData
-                                                        .recommendedHospital
-                                                        .icuAvailable
-                                                }
-                                            </p>
-
-                                        </div>
-
-                                        <div className="bg-white rounded-lg p-4">
-
-                                            <p className="text-gray-500 text-sm">
-                                                Traffic
-                                            </p>
-
-                                            <p
-                                                className={`font-bold text-lg ${
-                                                    hospitalData
-                                                        .recommendedHospital
-                                                        .trafficLevel ===
+                                        {[
+                                            {
+                                                label: "Distance",
+                                                value: `${hospitalData.recommendedHospital.distance} km`,
+                                                icon: "📍",
+                                                color: "text-cyan-300",
+                                            },
+                                            {
+                                                label: "Beds",
+                                                value: hospitalData.recommendedHospital.bedsAvailable,
+                                                icon: "🛏️",
+                                                color: "text-lime-300",
+                                            },
+                                            {
+                                                label: "ICU",
+                                                value: hospitalData.recommendedHospital.icuAvailable,
+                                                icon: "🏥",
+                                                color: "text-violet-300",
+                                            },
+                                            {
+                                                label: "Traffic",
+                                                value: hospitalData.recommendedHospital.trafficLevel,
+                                                icon: "🚦",
+                                                color:
+                                                    hospitalData.recommendedHospital.trafficLevel ===
                                                     "Low"
-                                                        ? "text-green-600"
-                                                        : hospitalData
-                                                              .recommendedHospital
-                                                              .trafficLevel ===
+                                                        ? "text-lime-300"
+                                                        : hospitalData.recommendedHospital.trafficLevel ===
                                                           "Medium"
-                                                        ? "text-yellow-600"
-                                                        : "text-red-600"
-                                                }`}
-                                            >
-                                                🚦{" "}
-                                                {
-                                                    hospitalData
-                                                        .recommendedHospital
-                                                        .trafficLevel
-                                                }
-                                            </p>
+                                                        ? "text-amber-300"
+                                                        : "text-rose-300",
+                                            },
+                                        ].map((item) => (
 
-                                        </div>
+                                            <div
+                                                key={item.label}
+                                                className="rounded-xl border border-white/6 bg-[#0B1020]/70 p-4"
+                                            >
+
+                                                <div className="flex items-center gap-2">
+
+                                                    <span>
+                                                        {item.icon}
+                                                    </span>
+
+                                                    <p className="text-[10px] uppercase tracking-widest text-slate-500">
+                                                        {item.label}
+                                                    </p>
+
+                                                </div>
+
+                                                <p
+                                                    className={`mt-2 text-lg font-black ${item.color}`}
+                                                >
+                                                    {item.value}
+                                                </p>
+
+                                            </div>
+
+                                        ))}
 
                                     </div>
 
-                                    {/* SUPPORT */}
+                                    {/* REASONS */}
 
-                                    <div className="mt-6 p-4 bg-white rounded-lg">
+                                    <div className="mt-5 rounded-xl border border-white/6 bg-[#070A12]/50 p-4">
 
-                                        <p className="font-semibold mb-2">
+                                        <p className="mb-3 text-xs font-bold uppercase tracking-widest text-slate-500">
                                             Why this hospital?
                                         </p>
 
-                                        <div className="flex flex-wrap gap-3">
+                                        <div className="flex flex-wrap gap-2">
 
                                             {hospitalData
                                                 .recommendedHospital
                                                 .emergencySupport && (
-                                                <span className="bg-green-100 text-green-700 px-3 py-2 rounded-lg font-semibold">
+
+                                                <span className="rounded-lg border border-lime-400/20 bg-lime-400/4 px-3 py-2 text-xs font-bold text-lime-300">
                                                     ✓ Emergency Support
                                                 </span>
                                             )}
 
                                             {hospitalData
                                                 .recommendedHospital
-                                                .icuAvailable >
-                                                0 && (
-                                                <span className="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg font-semibold">
+                                                .icuAvailable > 0 && (
+
+                                                <span className="rounded-lg border border-violet-400/20 bg-violet-400/4 px-3 py-2 text-xs font-bold text-violet-300">
                                                     ✓ ICU Available
                                                 </span>
                                             )}
 
                                             {hospitalData
                                                 .recommendedHospital
-                                                .bedsAvailable >
-                                                0 && (
-                                                <span className="bg-purple-100 text-purple-700 px-3 py-2 rounded-lg font-semibold">
+                                                .bedsAvailable > 0 && (
+
+                                                <span className="rounded-lg border border-cyan-400/20 bg-cyan-400/4 px-3 py-2 text-xs font-bold text-cyan-300">
                                                     ✓ Beds Available
                                                 </span>
                                             )}
@@ -861,7 +1250,8 @@ export default function TrackingPage() {
                                                 .recommendedHospital
                                                 .trafficLevel ===
                                                 "Low" && (
-                                                <span className="bg-green-100 text-green-700 px-3 py-2 rounded-lg font-semibold">
+
+                                                <span className="rounded-lg border border-lime-400/20 bg-lime-400/4 px-3 py-2 text-xs font-bold text-lime-300">
                                                     ✓ Low Traffic
                                                 </span>
                                             )}
@@ -872,149 +1262,181 @@ export default function TrackingPage() {
 
                                 </div>
 
-                                {/* OTHER HOSPITALS */}
+                            </div>
 
-                                <div className="mt-8">
+                            {/* OTHER HOSPITALS */}
 
-                                    <h3 className="text-xl font-bold mb-4">
-                                        🏥 Other Nearby Hospitals
-                                    </h3>
+                            <div className="mt-8">
 
-                                    <div className="grid md:grid-cols-2 gap-5">
+                                <div className="mb-4 flex items-center justify-between">
 
-                                        {hospitalData.hospitals
-                                            .filter(
-                                                (hospital) =>
-                                                    hospital.id !==
-                                                    hospitalData
-                                                        .recommendedHospital
-                                                        .id
-                                            )
-                                            .map(
-                                                (
-                                                    hospital
-                                                ) => (
+                                    <div>
 
-                                                    <div
-                                                        key={
-                                                            hospital.id
-                                                        }
-                                                        className="bg-white border rounded-xl p-5 shadow-sm"
-                                                    >
+                                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                                            Alternatives
+                                        </p>
 
-                                                        <div className="flex justify-between items-start gap-3">
+                                        <h3 className="mt-1 text-xl font-black">
+                                            Other Nearby Hospitals
+                                        </h3>
 
-                                                            <div>
+                                    </div>
 
-                                                                <h4 className="font-bold text-lg">
-                                                                    🏥{" "}
-                                                                    {
-                                                                        hospital.name
-                                                                    }
-                                                                </h4>
+                                    <span className="text-xs text-slate-600">
+                                        {hospitalData.hospitals.length} found
+                                    </span>
 
-                                                                <p className="text-gray-500 mt-1">
-                                                                    📍{" "}
-                                                                    {
-                                                                        hospital.distance
-                                                                    }{" "}
-                                                                    km
-                                                                </p>
+                                </div>
 
-                                                            </div>
+                                <div className="grid gap-4 md:grid-cols-2">
 
-                                                            <span
-                                                                className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                                                    hospital.trafficLevel ===
-                                                                    "Low"
-                                                                        ? "bg-green-100 text-green-700"
-                                                                        : hospital.trafficLevel ===
-                                                                          "Medium"
-                                                                        ? "bg-yellow-100 text-yellow-700"
-                                                                        : "bg-red-100 text-red-700"
-                                                                }`}
-                                                            >
-                                                                🚦{" "}
-                                                                {
-                                                                    hospital.trafficLevel
-                                                                }
-                                                            </span>
+                                    {hospitalData.hospitals
+                                        .filter(
+                                            (hospital) =>
+                                                hospital.id !==
+                                                hospitalData
+                                                    .recommendedHospital
+                                                    .id
+                                        )
+                                        .map((hospital) => (
 
-                                                        </div>
+                                            <div
+                                                key={hospital.id}
+                                                className="group rounded-2xl border border-white/6 bg-[#0B1020] p-5 transition hover:-translate-y-0.5 hover:border-cyan-400/20"
+                                            >
 
-                                                        <div className="grid grid-cols-2 gap-3 mt-5">
+                                                <div className="flex items-start justify-between gap-3">
 
-                                                            <div className="bg-gray-50 rounded-lg p-3">
+                                                    <div>
 
-                                                                <p className="text-gray-500 text-sm">
-                                                                    Beds
-                                                                </p>
+                                                        <h4 className="font-bold text-white">
+                                                            🏥{" "}
+                                                            {hospital.name}
+                                                        </h4>
 
-                                                                <p className="font-bold">
-                                                                    {
-                                                                        hospital.bedsAvailable
-                                                                    }
-                                                                </p>
-
-                                                            </div>
-
-                                                            <div className="bg-gray-50 rounded-lg p-3">
-
-                                                                <p className="text-gray-500 text-sm">
-                                                                    ICU
-                                                                </p>
-
-                                                                <p className="font-bold">
-                                                                    {
-                                                                        hospital.icuAvailable
-                                                                    }
-                                                                </p>
-
-                                                            </div>
-
-                                                        </div>
+                                                        <p className="mt-1 text-xs text-slate-500">
+                                                            📍{" "}
+                                                            {hospital.distance} km away
+                                                        </p>
 
                                                     </div>
 
-                                                )
-                                            )}
+                                                    <span
+                                                        className={`rounded-full border px-3 py-1 text-[10px] font-bold ${
+                                                            hospital.trafficLevel ===
+                                                            "Low"
+                                                                ? "border-lime-400/20 bg-lime-400/4 text-lime-300"
+                                                                : hospital.trafficLevel ===
+                                                                  "Medium"
+                                                                ? "border-amber-400/20 bg-amber-400/4 text-amber-300"
+                                                                : "border-rose-400/20 bg-rose-400/4 text-rose-300"
+                                                        }`}
+                                                    >
+                                                        🚦{" "}
+                                                        {
+                                                            hospital.trafficLevel
+                                                        }
+                                                    </span>
 
-                                    </div>
+                                                </div>
+
+                                                <div className="mt-5 grid grid-cols-2 gap-3">
+
+                                                    <div className="rounded-xl border border-white/6 bg-white/[0.02] p-3">
+
+                                                        <p className="text-[10px] uppercase tracking-widest text-slate-600">
+                                                            Beds
+                                                        </p>
+
+                                                        <p className="mt-1 text-lg font-black text-cyan-300">
+                                                            {
+                                                                hospital.bedsAvailable
+                                                            }
+                                                        </p>
+
+                                                    </div>
+
+                                                    <div className="rounded-xl border border-white/6 bg-white/[0.02] p-3">
+
+                                                        <p className="text-[10px] uppercase tracking-widest text-slate-600">
+                                                            ICU
+                                                        </p>
+
+                                                        <p className="mt-1 text-lg font-black text-violet-300">
+                                                            {
+                                                                hospital.icuAvailable
+                                                            }
+                                                        </p>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        ))}
 
                                 </div>
 
                             </div>
-                        )}
 
-                    </div>
+                        </div>
 
-                    {/* ==================================
-                        AUTO REFRESH
-                    ================================== */}
+                    )}
 
-                    <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+                </section>
 
-                        <p className="font-semibold">
-                            🔄 Live tracking active
-                        </p>
+                {/* =================================================
+                    LIVE FOOTER
+                ================================================= */}
 
-                        <p className="text-gray-600 mt-1">
-                            Location and hospital recommendation
-                            refresh every 5 seconds.
-                        </p>
+                <footer className="rounded-2xl border border-white/6 bg-white/4 p-5 backdrop-blur-xl">
+
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div className="flex items-center gap-3">
+
+                            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-lime-400/20 bg-lime-400/4">
+
+                                <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-lime-400 shadow-[0_0_12px_rgba(163,230,53,0.8)]" />
+
+                            </div>
+
+                            <div>
+
+                                <p className="text-sm font-bold text-white">
+                                    Live tracking active
+                                </p>
+
+                                <p className="mt-1 text-xs text-slate-500">
+                                    Location and hospital recommendation refresh every 5 seconds.
+                                </p>
+
+                            </div>
+
+                        </div>
 
                         {lastUpdated && (
-                            <p className="text-gray-500 mt-1">
-                                Last updated:{" "}
-                                {lastUpdated.toLocaleTimeString()}
-                            </p>
+
+                            <div className="text-left sm:text-right">
+
+                                <p className="text-[10px] uppercase tracking-widest text-slate-600">
+                                    Last synchronized
+                                </p>
+
+                                <p className="mt-1 font-mono text-xs text-cyan-300">
+                                    {lastUpdated.toLocaleTimeString()}
+                                </p>
+
+                            </div>
+
                         )}
 
                     </div>
 
-                </div>
+                </footer>
 
-            )}
+            </main>
 
         </div>
     );

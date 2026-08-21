@@ -61,6 +61,13 @@ export default function DriverDashboard() {
                 setData(result.data);
             } else {
                 console.log(result.message);
+
+                // Login expire ho gaya ya session hi nahi hai —
+                // seedha driver login page pe bhej do
+                if (res.status === 401) {
+                    window.location.href = "/driver/login";
+                    return;
+                }
             }
         } catch (error) {
             console.log(
@@ -71,7 +78,6 @@ export default function DriverDashboard() {
             setLoading(false);
         }
     };
-
     // =====================================================
     // INITIAL LOAD + AUTO REFRESH
     // =====================================================
@@ -589,428 +595,344 @@ export default function DriverDashboard() {
     // UI
     // =====================================================
 
-   return (
-    <div className="min-h-screen bg-slate-50">
+    return (
+        <div className="min-h-screen bg-slate-50">
 
-        {/* =====================================================
+            {/* =====================================================
             HEADER
         ===================================================== */}
 
-        <header className="bg-white border-b sticky top-0 z-20">
+            <header className="bg-white border-b sticky top-0 z-20">
 
-            <div className="max-w-7xl mx-auto px-5 md:px-8 py-5">
+                <div className="max-w-7xl mx-auto px-5 md:px-8 py-5">
 
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4">
 
-                        <div className="w-14 h-14 rounded-2xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-200">
-                            <span className="text-3xl">
-                                🚑
+                            <div className="w-14 h-14 rounded-2xl bg-red-600 flex items-center justify-center shadow-lg shadow-red-200">
+                                <span className="text-3xl">
+                                    🚑
+                                </span>
+                            </div>
+
+                            <div>
+                                <h1 className="text-2xl md:text-3xl font-extrabold text-slate-800">
+                                    Driver Dashboard
+                                </h1>
+
+                                <p className="text-sm text-slate-500 mt-1">
+                                    Manage ambulance trips & live location
+                                </p>
+                            </div>
+
+                        </div>
+
+                        {/* DRIVER ONLINE */}
+
+                        <div className="flex items-center gap-3 bg-green-50 border border-green-200 px-4 py-3 rounded-xl">
+
+                            <span className="relative flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                             </span>
-                        </div>
 
-                        <div>
-                            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-800">
-                                Driver Dashboard
-                            </h1>
+                            <div>
+                                <p className="text-sm font-bold text-green-700">
+                                    Driver Active
+                                </p>
 
-                            <p className="text-sm text-slate-500 mt-1">
-                                Manage ambulance trips & live location
-                            </p>
-                        </div>
+                                <p className="text-xs text-green-600">
+                                    System connected
+                                </p>
+                            </div>
 
-                    </div>
-
-                    {/* DRIVER ONLINE */}
-
-                    <div className="flex items-center gap-3 bg-green-50 border border-green-200 px-4 py-3 rounded-xl">
-
-                        <span className="relative flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                        </span>
-
-                        <div>
-                            <p className="text-sm font-bold text-green-700">
-                                Driver Active
-                            </p>
-
-                            <p className="text-xs text-green-600">
-                                System connected
-                            </p>
                         </div>
 
                     </div>
 
                 </div>
 
-            </div>
-
-        </header>
+            </header>
 
 
-        {/* =====================================================
+            {/* =====================================================
             MAIN
         ===================================================== */}
 
-        <main className="max-w-7xl mx-auto px-5 md:px-8 py-8">
+            <main className="max-w-7xl mx-auto px-5 md:px-8 py-8">
 
 
-            {/* =================================================
+                {/* =================================================
                 DRIVER INFORMATION
             ================================================= */}
 
-            <section className="mb-8">
+                <section className="mb-8">
 
-                <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center justify-between mb-5">
 
-                    <div>
-                        <h2 className="text-xl md:text-2xl font-bold text-slate-800">
-                            Driver & Ambulance
-                        </h2>
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-bold text-slate-800">
+                                Driver & Ambulance
+                            </h2>
 
-                        <p className="text-sm text-slate-500 mt-1">
-                            Your assigned ambulance information
-                        </p>
-                    </div>
-
-                    <span className="hidden md:inline-block text-sm text-slate-400">
-                        🚑 Vehicle Details
-                    </span>
-
-                </div>
-
-
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-
-                    {/* DRIVER */}
-
-                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-                        <div className="flex items-center gap-3 mb-4">
-
-                            <div className="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
-                                👨‍✈️
-                            </div>
-
-                            <p className="text-sm text-slate-500">
-                                Driver Name
+                            <p className="text-sm text-slate-500 mt-1">
+                                Your assigned ambulance information
                             </p>
-
                         </div>
 
-                        <p className="text-lg font-bold text-slate-800">
-                            {data.driverName}
-                        </p>
-
-                    </div>
-
-
-                    {/* VEHICLE */}
-
-                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-                        <div className="flex items-center gap-3 mb-4">
-
-                            <div className="w-11 h-11 rounded-xl bg-red-100 flex items-center justify-center text-xl">
-                                🚑
-                            </div>
-
-                            <p className="text-sm text-slate-500">
-                                Vehicle Number
-                            </p>
-
-                        </div>
-
-                        <p className="text-lg font-bold text-slate-800">
-                            {data.vehicleNo}
-                        </p>
-
-                    </div>
-
-
-                    {/* TYPE */}
-
-                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-                        <div className="flex items-center gap-3 mb-4">
-
-                            <div className="w-11 h-11 rounded-xl bg-purple-100 flex items-center justify-center text-xl">
-                                🏥
-                            </div>
-
-                            <p className="text-sm text-slate-500">
-                                Ambulance Type
-                            </p>
-
-                        </div>
-
-                        <p className="text-lg font-bold text-slate-800">
-                            {data.ambulanceType}
-                        </p>
-
-                    </div>
-
-
-                    {/* STATUS */}
-
-                    <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-                        <div className="flex items-center gap-3 mb-4">
-
-                            <div className="w-11 h-11 rounded-xl bg-green-100 flex items-center justify-center text-xl">
-                                🚦
-                            </div>
-
-                            <p className="text-sm text-slate-500">
-                                Ambulance Status
-                            </p>
-
-                        </div>
-
-                        <span
-                            className={`inline-flex px-4 py-2 rounded-full text-sm font-bold ${
-                                data.ambulanceStatus === "Available"
-                                    ? "bg-green-100 text-green-700"
-                                    : data.ambulanceStatus === "Busy"
-                                    ? "bg-yellow-100 text-yellow-700"
-                                    : "bg-red-100 text-red-700"
-                            }`}
-                        >
-                            {data.ambulanceStatus === "Available"
-                                ? "🟢 "
-                                : data.ambulanceStatus === "Busy"
-                                ? "🟡 "
-                                : "🔴 "}
-                            {data.ambulanceStatus}
+                        <span className="hidden md:inline-block text-sm text-slate-400">
+                            🚑 Vehicle Details
                         </span>
 
                     </div>
 
-                </div>
 
-            </section>
-
-
-            {/* =================================================
-                CURRENT BOOKING
-            ================================================= */}
-
-            <section>
-
-                <div className="flex items-center justify-between mb-5">
-
-                    <div>
-                        <h2 className="text-xl md:text-2xl font-bold text-slate-800">
-                            Current Booking
-                        </h2>
-
-                        <p className="text-sm text-slate-500 mt-1">
-                            Manage your assigned emergency trip
-                        </p>
-                    </div>
-
-                </div>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
 
-                {!data.booking ? (
+                        {/* DRIVER */}
 
-                    /* NO BOOKING */
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
 
-                    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-12 text-center">
+                            <div className="flex items-center gap-3 mb-4">
 
-                        <div className="w-20 h-20 mx-auto bg-slate-100 rounded-full flex items-center justify-center text-4xl mb-5">
-                            🚑
-                        </div>
-
-                        <h3 className="text-xl font-bold text-slate-700">
-                            No Active Booking
-                        </h3>
-
-                        <p className="text-slate-500 mt-2">
-                            There is currently no emergency booking assigned to you.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    <div className="space-y-6">
-
-
-                        {/* =================================================
-                            BOOKING HEADER
-                        ================================================= */}
-
-                        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-
-                            <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-5 text-white">
-
-                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-                                    <div>
-
-                                        <p className="text-red-100 text-sm">
-                                            Emergency Booking
-                                        </p>
-
-                                        <h3 className="text-2xl font-bold mt-1">
-                                            Patient: {data.booking.patientName}
-                                        </h3>
-
-                                    </div>
-
-
-                                    <span
-                                        className={`self-start md:self-auto px-4 py-2 rounded-full text-sm font-bold ${
-                                            data.booking.status === "Completed"
-                                                ? "bg-white text-blue-600"
-                                                : data.booking.status === "Arrived"
-                                                ? "bg-white text-purple-600"
-                                                : data.booking.status === "On the Way"
-                                                ? "bg-white text-orange-600"
-                                                : "bg-white text-green-600"
-                                        }`}
-                                    >
-                                        {data.booking.status}
-                                    </span>
-
+                                <div className="w-11 h-11 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
+                                    👨‍✈️
                                 </div>
+
+                                <p className="text-sm text-slate-500">
+                                    Driver Name
+                                </p>
 
                             </div>
 
+                            <p className="text-lg font-bold text-slate-800">
+                                {data.driverName}
+                            </p>
 
-                            {/* BOOKING DETAILS */}
-
-                            <div className="p-6">
-
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-
-
-                                    {/* PATIENT */}
-
-                                    <div className="bg-slate-50 rounded-xl p-4">
-
-                                        <p className="text-xs uppercase tracking-wide text-slate-400 font-bold">
-                                            Patient
-                                        </p>
-
-                                        <p className="font-bold text-slate-800 mt-2">
-                                            👤 {data.booking.patientName}
-                                        </p>
-
-                                    </div>
+                        </div>
 
 
-                                    {/* MOBILE */}
+                        {/* VEHICLE */}
 
-                                    <div className="bg-slate-50 rounded-xl p-4">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
 
-                                        <p className="text-xs uppercase tracking-wide text-slate-400 font-bold">
-                                            Patient Mobile
-                                        </p>
+                            <div className="flex items-center gap-3 mb-4">
 
-                                        <p className="font-bold text-slate-800 mt-2">
-                                            📞 {data.booking.patientMobile}
-                                        </p>
-
-                                    </div>
-
-
-                                    {/* EMERGENCY */}
-
-                                    <div className="bg-red-50 rounded-xl p-4">
-
-                                        <p className="text-xs uppercase tracking-wide text-red-400 font-bold">
-                                            Emergency
-                                        </p>
-
-                                        <p className="font-bold text-red-700 mt-2">
-                                            🚨 {data.booking.emergencyType}
-                                        </p>
-
-                                    </div>
-
+                                <div className="w-11 h-11 rounded-xl bg-red-100 flex items-center justify-center text-xl">
+                                    🚑
                                 </div>
 
+                                <p className="text-sm text-slate-500">
+                                    Vehicle Number
+                                </p>
 
-                                {/* ROUTE */}
+                            </div>
 
-                                <div className="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                            <p className="text-lg font-bold text-slate-800">
+                                {data.vehicleNo}
+                            </p>
 
-                                    <p className="text-sm font-bold text-slate-700 mb-5">
-                                        🛣️ Emergency Route
-                                    </p>
-
-                                    <div className="relative">
-
-                                        <div className="absolute left-3 top-7 bottom-7 w-0.5 bg-slate-300"></div>
-
-
-                                        {/* PICKUP */}
-
-                                        <div className="relative flex gap-4">
-
-                                            <div className="w-7 h-7 rounded-full bg-blue-500 border-4 border-blue-100 flex-shrink-0"></div>
-
-                                            <div className="pb-7">
-
-                                                <p className="text-xs text-slate-400 uppercase font-bold">
-                                                    Pickup Location
-                                                </p>
-
-                                                <p className="font-semibold text-slate-800 mt-1">
-                                                    {data.booking.pickupLocation}
-                                                </p>
-
-                                            </div>
-
-                                        </div>
+                        </div>
 
 
-                                        {/* DESTINATION */}
+                        {/* TYPE */}
 
-                                        <div className="relative flex gap-4">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
 
-                                            <div className="w-7 h-7 rounded-full bg-red-600 border-4 border-red-100 flex-shrink-0"></div>
+                            <div className="flex items-center gap-3 mb-4">
 
-                                            <div>
-
-                                                <p className="text-xs text-slate-400 uppercase font-bold">
-                                                    Destination
-                                                </p>
-
-                                                <p className="font-semibold text-slate-800 mt-1">
-                                                    {data.booking.destination}
-                                                </p>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
+                                <div className="w-11 h-11 rounded-xl bg-purple-100 flex items-center justify-center text-xl">
+                                    🏥
                                 </div>
 
+                                <p className="text-sm text-slate-500">
+                                    Ambulance Type
+                                </p>
 
-                                {/* =================================================
-                                    TRIP CONTROLS
-                                ================================================= */}
+                            </div>
 
-                                <div className="mt-7 border-t pt-7">
+                            <p className="text-lg font-bold text-slate-800">
+                                {data.ambulanceType}
+                            </p>
 
-                                    <div className="flex items-center justify-between mb-5">
+                        </div>
+
+
+                        {/* STATUS */}
+
+                        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+
+                            <div className="flex items-center gap-3 mb-4">
+
+                                <div className="w-11 h-11 rounded-xl bg-green-100 flex items-center justify-center text-xl">
+                                    🚦
+                                </div>
+
+                                <p className="text-sm text-slate-500">
+                                    Ambulance Status
+                                </p>
+
+                            </div>
+
+                            <span
+                                className={`inline-flex px-4 py-2 rounded-full text-sm font-bold ${data.ambulanceStatus === "Available"
+                                        ? "bg-green-100 text-green-700"
+                                        : data.ambulanceStatus === "Busy"
+                                            ? "bg-yellow-100 text-yellow-700"
+                                            : "bg-red-100 text-red-700"
+                                    }`}
+                            >
+                                {data.ambulanceStatus === "Available"
+                                    ? "🟢 "
+                                    : data.ambulanceStatus === "Busy"
+                                        ? "🟡 "
+                                        : "🔴 "}
+                                {data.ambulanceStatus}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                {/* =================================================
+                CURRENT BOOKING
+            ================================================= */}
+
+                <section>
+
+                    <div className="flex items-center justify-between mb-5">
+
+                        <div>
+                            <h2 className="text-xl md:text-2xl font-bold text-slate-800">
+                                Current Booking
+                            </h2>
+
+                            <p className="text-sm text-slate-500 mt-1">
+                                Manage your assigned emergency trip
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    {!data.booking ? (
+
+                        /* NO BOOKING */
+
+                        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-12 text-center">
+
+                            <div className="w-20 h-20 mx-auto bg-slate-100 rounded-full flex items-center justify-center text-4xl mb-5">
+                                🚑
+                            </div>
+
+                            <h3 className="text-xl font-bold text-slate-700">
+                                No Active Booking
+                            </h3>
+
+                            <p className="text-slate-500 mt-2">
+                                There is currently no emergency booking assigned to you.
+                            </p>
+
+                        </div>
+
+                    ) : (
+
+                        <div className="space-y-6">
+
+
+                            {/* =================================================
+                            BOOKING HEADER
+                        ================================================= */}
+
+                            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+
+                                <div className="bg-gradient-to-r from-red-600 to-red-500 px-6 py-5 text-white">
+
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
                                         <div>
 
-                                            <h3 className="text-lg font-bold text-slate-800">
-                                                🚑 Trip Controls
+                                            <p className="text-red-100 text-sm">
+                                                Emergency Booking
+                                            </p>
+
+                                            <h3 className="text-2xl font-bold mt-1">
+                                                Patient: {data.booking.patientName}
                                             </h3>
 
-                                            <p className="text-sm text-slate-500">
-                                                Update trip status and ambulance movement
+                                        </div>
+
+
+                                        <span
+                                            className={`self-start md:self-auto px-4 py-2 rounded-full text-sm font-bold ${data.booking.status === "Completed"
+                                                    ? "bg-white text-blue-600"
+                                                    : data.booking.status === "Arrived"
+                                                        ? "bg-white text-purple-600"
+                                                        : data.booking.status === "On the Way"
+                                                            ? "bg-white text-orange-600"
+                                                            : "bg-white text-green-600"
+                                                }`}
+                                        >
+                                            {data.booking.status}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                {/* BOOKING DETAILS */}
+
+                                <div className="p-6">
+
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+
+                                        {/* PATIENT */}
+
+                                        <div className="bg-slate-50 rounded-xl p-4">
+
+                                            <p className="text-xs uppercase tracking-wide text-slate-400 font-bold">
+                                                Patient
+                                            </p>
+
+                                            <p className="font-bold text-slate-800 mt-2">
+                                                👤 {data.booking.patientName}
+                                            </p>
+
+                                        </div>
+
+
+                                        {/* MOBILE */}
+
+                                        <div className="bg-slate-50 rounded-xl p-4">
+
+                                            <p className="text-xs uppercase tracking-wide text-slate-400 font-bold">
+                                                Patient Mobile
+                                            </p>
+
+                                            <p className="font-bold text-slate-800 mt-2">
+                                                📞 {data.booking.patientMobile}
+                                            </p>
+
+                                        </div>
+
+
+                                        {/* EMERGENCY */}
+
+                                        <div className="bg-red-50 rounded-xl p-4">
+
+                                            <p className="text-xs uppercase tracking-wide text-red-400 font-bold">
+                                                Emergency
+                                            </p>
+
+                                            <p className="font-bold text-red-700 mt-2">
+                                                🚨 {data.booking.emergencyType}
                                             </p>
 
                                         </div>
@@ -1018,87 +940,212 @@ export default function DriverDashboard() {
                                     </div>
 
 
-                                    {/* APPROVED */}
+                                    {/* ROUTE */}
 
-                                    {data.booking.status === "Approved" && (
+                                    <div className="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-5">
 
-                                        <div className="flex flex-wrap gap-3">
+                                        <p className="text-sm font-bold text-slate-700 mb-5">
+                                            🛣️ Emergency Route
+                                        </p>
 
-                                            <button
-                                                onClick={startTrip}
-                                                className="px-6 py-3 rounded-xl bg-red-600 text-white font-bold shadow-lg shadow-red-200 hover:bg-red-700 hover:-translate-y-0.5 transition"
-                                            >
-                                                🚑 Start Trip
-                                            </button>
+                                        <div className="relative">
 
-                                            <button
-                                                disabled
-                                                className="px-6 py-3 rounded-xl bg-slate-200 text-slate-400 font-bold cursor-not-allowed"
-                                            >
-                                                🧪 Demo Tracking
-                                            </button>
+                                            <div className="absolute left-3 top-7 bottom-7 w-0.5 bg-slate-300"></div>
+
+
+                                            {/* PICKUP */}
+
+                                            <div className="relative flex gap-4">
+
+                                                <div className="w-7 h-7 rounded-full bg-blue-500 border-4 border-blue-100 flex-shrink-0"></div>
+
+                                                <div className="pb-7">
+
+                                                    <p className="text-xs text-slate-400 uppercase font-bold">
+                                                        Pickup Location
+                                                    </p>
+
+                                                    <p className="font-semibold text-slate-800 mt-1">
+                                                        {data.booking.pickupLocation}
+                                                    </p>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            {/* DESTINATION */}
+
+                                            <div className="relative flex gap-4">
+
+                                                <div className="w-7 h-7 rounded-full bg-red-600 border-4 border-red-100 flex-shrink-0"></div>
+
+                                                <div>
+
+                                                    <p className="text-xs text-slate-400 uppercase font-bold">
+                                                        Destination
+                                                    </p>
+
+                                                    <p className="font-semibold text-slate-800 mt-1">
+                                                        {data.booking.destination}
+                                                    </p>
+
+                                                </div>
+
+                                            </div>
 
                                         </div>
 
-                                    )}
+                                    </div>
 
 
-                                    {/* ON THE WAY */}
+                                    {/* =================================================
+                                    TRIP CONTROLS
+                                ================================================= */}
 
-                                    {data.booking.status === "On the Way" && (
+                                    <div className="mt-7 border-t pt-7">
 
-                                        <div className="flex flex-wrap gap-3">
+                                        <div className="flex items-center justify-between mb-5">
 
-                                            <button
-                                                onClick={startDemoTracking}
-                                                disabled={
-                                                    isDemoTracking ||
-                                                    isTracking
-                                                }
-                                                className="px-6 py-3 rounded-xl bg-blue-600 text-white font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition disabled:bg-slate-300 disabled:shadow-none"
-                                            >
-                                                {isDemoTracking
-                                                    ? "🧪 Demo Movement Live..."
-                                                    : "🧪 Start Demo Tracking"}
-                                            </button>
+                                            <div>
 
+                                                <h3 className="text-lg font-bold text-slate-800">
+                                                    🚑 Trip Controls
+                                                </h3>
 
-                                            <button
-                                                onClick={() =>
-                                                    updateTripStatus("ARRIVED")
-                                                }
-                                                className="px-6 py-3 rounded-xl bg-purple-600 text-white font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 transition"
-                                            >
-                                                📍 Mark Arrived
-                                            </button>
+                                                <p className="text-sm text-slate-500">
+                                                    Update trip status and ambulance movement
+                                                </p>
+
+                                            </div>
 
                                         </div>
 
-                                    )}
+
+                                        {/* APPROVED */}
+
+                                        {data.booking.status === "Approved" && (
+
+                                            <div className="flex flex-wrap gap-3">
+
+                                                <button
+                                                    onClick={startTrip}
+                                                    className="px-6 py-3 rounded-xl bg-red-600 text-white font-bold shadow-lg shadow-red-200 hover:bg-red-700 hover:-translate-y-0.5 transition"
+                                                >
+                                                    🚑 Start Trip
+                                                </button>
+
+                                                <button
+                                                    disabled
+                                                    className="px-6 py-3 rounded-xl bg-slate-200 text-slate-400 font-bold cursor-not-allowed"
+                                                >
+                                                    🧪 Demo Tracking
+                                                </button>
+
+                                            </div>
+
+                                        )}
 
 
-                                    {/* ARRIVED */}
+                                        {/* ON THE WAY */}
 
-                                    {data.booking.status === "Arrived" && (
+                                        {data.booking.status === "On the Way" && (
 
-                                        <div>
+                                            <div className="flex flex-wrap gap-3">
 
-                                            <div className="bg-purple-50 border border-purple-200 rounded-2xl p-5 mb-5">
+                                                <button
+                                                    onClick={startDemoTracking}
+                                                    disabled={
+                                                        isDemoTracking ||
+                                                        isTracking
+                                                    }
+                                                    className="px-6 py-3 rounded-xl bg-blue-600 text-white font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition disabled:bg-slate-300 disabled:shadow-none"
+                                                >
+                                                    {isDemoTracking
+                                                        ? "🧪 Demo Movement Live..."
+                                                        : "🧪 Start Demo Tracking"}
+                                                </button>
 
-                                                <div className="flex gap-4">
 
-                                                    <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl">
-                                                        📍
+                                                <button
+                                                    onClick={() =>
+                                                        updateTripStatus("ARRIVED")
+                                                    }
+                                                    className="px-6 py-3 rounded-xl bg-purple-600 text-white font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 transition"
+                                                >
+                                                    📍 Mark Arrived
+                                                </button>
+
+                                            </div>
+
+                                        )}
+
+
+                                        {/* ARRIVED */}
+
+                                        {data.booking.status === "Arrived" && (
+
+                                            <div>
+
+                                                <div className="bg-purple-50 border border-purple-200 rounded-2xl p-5 mb-5">
+
+                                                    <div className="flex gap-4">
+
+                                                        <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl">
+                                                            📍
+                                                        </div>
+
+                                                        <div>
+
+                                                            <h4 className="font-bold text-purple-800 text-lg">
+                                                                Driver has arrived
+                                                            </h4>
+
+                                                            <p className="text-purple-700 text-sm mt-1">
+                                                                Ambulance is still Busy. Complete the trip after the patient journey is finished.
+                                                            </p>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <button
+                                                    onClick={() =>
+                                                        updateTripStatus("COMPLETE")
+                                                    }
+                                                    className="px-6 py-3 rounded-xl bg-green-600 text-white font-bold shadow-lg shadow-green-200 hover:bg-green-700 transition"
+                                                >
+                                                    ✅ Complete Trip
+                                                </button>
+
+                                            </div>
+
+                                        )}
+
+
+                                        {/* COMPLETED */}
+
+                                        {data.booking.status === "Completed" && (
+
+                                            <div className="bg-green-50 border border-green-200 rounded-2xl p-5">
+
+                                                <div className="flex items-center gap-4">
+
+                                                    <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-2xl">
+                                                        ✅
                                                     </div>
 
                                                     <div>
 
-                                                        <h4 className="font-bold text-purple-800 text-lg">
-                                                            Driver has arrived
+                                                        <h4 className="font-bold text-green-800 text-lg">
+                                                            Trip Completed Successfully
                                                         </h4>
 
-                                                        <p className="text-purple-700 text-sm mt-1">
-                                                            Ambulance is still Busy. Complete the trip after the patient journey is finished.
+                                                        <p className="text-green-700 text-sm mt-1">
+                                                            Ambulance is now Available for another emergency.
                                                         </p>
 
                                                     </div>
@@ -1107,291 +1154,248 @@ export default function DriverDashboard() {
 
                                             </div>
 
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            {/* =================================================
+                            LOCATION TRACKING
+                        ================================================= */}
+
+                            <div className="grid lg:grid-cols-2 gap-6">
+
+
+                                {/* GPS STATUS */}
+
+                                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+
+                                    <div className="flex items-center gap-4 mb-5">
+
+                                        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl">
+                                            📡
+                                        </div>
+
+                                        <div>
+
+                                            <h3 className="text-lg font-bold text-slate-800">
+                                                Live GPS Tracking
+                                            </h3>
+
+                                            <p className="text-sm text-slate-500">
+                                                Ambulance location service
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div className="bg-slate-50 rounded-xl p-4 mb-5">
+
+                                        <p className="text-xs uppercase tracking-wide text-slate-400 font-bold mb-2">
+                                            Current Status
+                                        </p>
+
+                                        <p
+                                            className={`font-semibold ${isTracking
+                                                    ? "text-green-600"
+                                                    : "text-slate-700"
+                                                }`}
+                                        >
+                                            {locationStatus}
+                                        </p>
+
+                                    </div>
+
+
+                                    {/* REAL GPS */}
+
+                                    {!isTracking && data.booking?.status === "On the Way" && (
+
+                                        <button
+                                            onClick={startLocationTracking}
+                                            disabled={isDemoTracking}
+                                            className="w-full px-5 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition disabled:bg-slate-300"
+                                        >
+                                            📍 Start Real GPS Tracking
+                                        </button>
+
+                                    )}
+
+
+                                    {isTracking && (
+
+                                        <button
+                                            onClick={stopLocationTracking}
+                                            className="w-full px-5 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition"
+                                        >
+                                            ⏹️ Stop GPS Tracking
+                                        </button>
+
+                                    )}
+
+                                </div>
+
+
+                                {/* DEMO TRACKING */}
+
+                                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+
+                                    <div className="flex items-center gap-4 mb-5">
+
+                                        <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-2xl">
+                                            🧪
+                                        </div>
+
+                                        <div>
+
+                                            <h3 className="text-lg font-bold text-slate-800">
+                                                Demo Tracking
+                                            </h3>
+
+                                            <p className="text-sm text-slate-500">
+                                                Simulated ambulance movement
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {isDemoTracking ? (
+
+                                        <div>
+
+                                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+
+                                                <div className="grid grid-cols-2 gap-4">
+
+                                                    <div>
+
+                                                        <p className="text-xs text-blue-500 font-bold uppercase">
+                                                            Latitude
+                                                        </p>
+
+                                                        <p className="font-bold text-blue-900 mt-1">
+                                                            {demoLatitude.toFixed(6)}
+                                                        </p>
+
+                                                    </div>
+
+
+                                                    <div>
+
+                                                        <p className="text-xs text-blue-500 font-bold uppercase">
+                                                            Longitude
+                                                        </p>
+
+                                                        <p className="font-bold text-blue-900 mt-1">
+                                                            {demoLongitude.toFixed(6)}
+                                                        </p>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-blue-700">
+
+                                                    <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
+
+                                                    Ambulance moving automatically
+
+                                                </div>
+
+                                            </div>
+
 
                                             <button
-                                                onClick={() =>
-                                                    updateTripStatus("COMPLETE")
-                                                }
-                                                className="px-6 py-3 rounded-xl bg-green-600 text-white font-bold shadow-lg shadow-green-200 hover:bg-green-700 transition"
+                                                onClick={stopDemoTracking}
+                                                className="w-full mt-4 px-5 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition"
                                             >
-                                                ✅ Complete Trip
+                                                ⏹️ Stop Demo Movement
+                                            </button>
+
+                                        </div>
+
+                                    ) : (
+
+                                        <div>
+
+                                            <div className="bg-slate-50 rounded-xl p-4 mb-4">
+
+                                                <p className="text-sm text-slate-600">
+                                                    Demo tracking simulates ambulance movement every 5 seconds.
+                                                </p>
+
+                                            </div>
+
+
+                                            <button
+                                                onClick={startDemoTracking}
+                                                disabled={
+                                                    isTracking ||
+                                                    data.booking?.status !== "On the Way"
+                                                }
+                                                className="w-full px-5 py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition disabled:bg-slate-300"
+                                            >
+                                                🧪 Start Demo Tracking
                                             </button>
 
                                         </div>
 
                                     )}
 
-
-                                    {/* COMPLETED */}
-
-                                    {data.booking.status === "Completed" && (
-
-                                        <div className="bg-green-50 border border-green-200 rounded-2xl p-5">
-
-                                            <div className="flex items-center gap-4">
-
-                                                <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-2xl">
-                                                    ✅
-                                                </div>
-
-                                                <div>
-
-                                                    <h4 className="font-bold text-green-800 text-lg">
-                                                        Trip Completed Successfully
-                                                    </h4>
-
-                                                    <p className="text-green-700 text-sm mt-1">
-                                                        Ambulance is now Available for another emergency.
-                                                    </p>
-
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-
-                                    )}
-
                                 </div>
 
                             </div>
 
-                        </div>
 
-
-                        {/* =================================================
-                            LOCATION TRACKING
-                        ================================================= */}
-
-                        <div className="grid lg:grid-cols-2 gap-6">
-
-
-                            {/* GPS STATUS */}
-
-                            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-
-                                <div className="flex items-center gap-4 mb-5">
-
-                                    <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl">
-                                        📡
-                                    </div>
-
-                                    <div>
-
-                                        <h3 className="text-lg font-bold text-slate-800">
-                                            Live GPS Tracking
-                                        </h3>
-
-                                        <p className="text-sm text-slate-500">
-                                            Ambulance location service
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                <div className="bg-slate-50 rounded-xl p-4 mb-5">
-
-                                    <p className="text-xs uppercase tracking-wide text-slate-400 font-bold mb-2">
-                                        Current Status
-                                    </p>
-
-                                    <p
-                                        className={`font-semibold ${
-                                            isTracking
-                                                ? "text-green-600"
-                                                : "text-slate-700"
-                                        }`}
-                                    >
-                                        {locationStatus}
-                                    </p>
-
-                                </div>
-
-
-                                {/* REAL GPS */}
-
-                                {!isTracking && data.booking?.status === "On the Way" && (
-
-                                    <button
-                                        onClick={startLocationTracking}
-                                        disabled={isDemoTracking}
-                                        className="w-full px-5 py-3 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition disabled:bg-slate-300"
-                                    >
-                                        📍 Start Real GPS Tracking
-                                    </button>
-
-                                )}
-
-
-                                {isTracking && (
-
-                                    <button
-                                        onClick={stopLocationTracking}
-                                        className="w-full px-5 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition"
-                                    >
-                                        ⏹️ Stop GPS Tracking
-                                    </button>
-
-                                )}
-
-                            </div>
-
-
-                            {/* DEMO TRACKING */}
-
-                            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-
-                                <div className="flex items-center gap-4 mb-5">
-
-                                    <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-2xl">
-                                        🧪
-                                    </div>
-
-                                    <div>
-
-                                        <h3 className="text-lg font-bold text-slate-800">
-                                            Demo Tracking
-                                        </h3>
-
-                                        <p className="text-sm text-slate-500">
-                                            Simulated ambulance movement
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                {isDemoTracking ? (
-
-                                    <div>
-
-                                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-
-                                            <div className="grid grid-cols-2 gap-4">
-
-                                                <div>
-
-                                                    <p className="text-xs text-blue-500 font-bold uppercase">
-                                                        Latitude
-                                                    </p>
-
-                                                    <p className="font-bold text-blue-900 mt-1">
-                                                        {demoLatitude.toFixed(6)}
-                                                    </p>
-
-                                                </div>
-
-
-                                                <div>
-
-                                                    <p className="text-xs text-blue-500 font-bold uppercase">
-                                                        Longitude
-                                                    </p>
-
-                                                    <p className="font-bold text-blue-900 mt-1">
-                                                        {demoLongitude.toFixed(6)}
-                                                    </p>
-
-                                                </div>
-
-                                            </div>
-
-
-                                            <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-blue-700">
-
-                                                <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span>
-
-                                                Ambulance moving automatically
-
-                                            </div>
-
-                                        </div>
-
-
-                                        <button
-                                            onClick={stopDemoTracking}
-                                            className="w-full mt-4 px-5 py-3 rounded-xl bg-slate-800 text-white font-bold hover:bg-slate-900 transition"
-                                        >
-                                            ⏹️ Stop Demo Movement
-                                        </button>
-
-                                    </div>
-
-                                ) : (
-
-                                    <div>
-
-                                        <div className="bg-slate-50 rounded-xl p-4 mb-4">
-
-                                            <p className="text-sm text-slate-600">
-                                                Demo tracking simulates ambulance movement every 5 seconds.
-                                            </p>
-
-                                        </div>
-
-
-                                        <button
-                                            onClick={startDemoTracking}
-                                            disabled={
-                                                isTracking ||
-                                                data.booking?.status !== "On the Way"
-                                            }
-                                            className="w-full px-5 py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition disabled:bg-slate-300"
-                                        >
-                                            🧪 Start Demo Tracking
-                                        </button>
-
-                                    </div>
-
-                                )}
-
-                            </div>
-
-                        </div>
-
-
-                        {/* =================================================
+                            {/* =================================================
                             STOP EVERYTHING
                         ================================================= */}
 
-                        {(isTracking || isDemoTracking) && (
+                            {(isTracking || isDemoTracking) && (
 
-                            <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div className="bg-red-50 border border-red-200 rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-                                <div>
+                                    <div>
 
-                                    <h3 className="font-bold text-red-800">
-                                        🛑 Tracking Control
-                                    </h3>
+                                        <h3 className="font-bold text-red-800">
+                                            🛑 Tracking Control
+                                        </h3>
 
-                                    <p className="text-sm text-red-600 mt-1">
-                                        Stop all active location tracking.
-                                    </p>
+                                        <p className="text-sm text-red-600 mt-1">
+                                            Stop all active location tracking.
+                                        </p>
+
+                                    </div>
+
+
+                                    <button
+                                        onClick={stopAllTracking}
+                                        className="px-6 py-3 rounded-xl border-2 border-red-500 text-red-600 font-bold hover:bg-red-100 transition"
+                                    >
+                                        🛑 Stop All Tracking
+                                    </button>
 
                                 </div>
 
+                            )}
 
-                                <button
-                                    onClick={stopAllTracking}
-                                    className="px-6 py-3 rounded-xl border-2 border-red-500 text-red-600 font-bold hover:bg-red-100 transition"
-                                >
-                                    🛑 Stop All Tracking
-                                </button>
+                        </div>
 
-                            </div>
+                    )}
 
-                        )}
+                </section>
 
-                    </div>
+            </main>
 
-                )}
-
-            </section>
-
-        </main>
-
-    </div>
-);}
+        </div>
+    );
+}

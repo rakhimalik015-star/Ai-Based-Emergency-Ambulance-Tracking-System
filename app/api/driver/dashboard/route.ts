@@ -103,20 +103,20 @@ export async function GET(req: NextRequest) {
 
         booking: booking
           ? {
-              id: booking.id,
+            id: booking.id,
 
-              patientName: booking.patient.name,
+            patientName: booking.patient?.name || "Emergency Booking (No Account)",
 
-              patientMobile: booking.patient.mobile,
+            patientMobile: booking.patient?.mobile || booking.mobile,
 
-              pickupLocation: booking.pickupLocation,
+            pickupLocation: booking.pickupLocation,
 
-              destination: booking.destination,
+            destination: booking.destination,
 
-              emergencyType: booking.emergencyType,
+            emergencyType: booking.emergencyType,
 
-              status: booking.status,
-            }
+            status: booking.status,
+          }
           : null,
       },
     });
